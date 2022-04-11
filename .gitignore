@@ -1,0 +1,10 @@
+# Personal notes
+notes.txt
+
+# VsCode junk
+.vscode
+*.code-workspace
+
+# Virtual Envs
+venv/
+env/

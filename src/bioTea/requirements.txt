@@ -1,0 +1,10 @@
+typer
+colorama
+shellingham
+pytest
+tqdm
+pandas
+requests
+xmltodict
+pyyaml
+docker

@@ -1,0 +1,5 @@
+**/renv
+*/.Rprofile
+*/*.Rproj
+
+.git
