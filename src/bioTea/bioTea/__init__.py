@@ -2,7 +2,6 @@
 
 A pipeline for processing transcription data to get differential gene expression.
 """
-import atexit
 import importlib.resources as pkg_resources
 import logging
 import os
@@ -19,6 +18,8 @@ from . import resources
 init(autoreset=True)
 
 __version__ = "0.0.1"
+# Set what is exported by the __init__
+__all__ = ["__version__", "OPTIONS"]
 
 # Parse local options for the tool.
 DEFAULT_OPTIONS = yaml.safe_load(
@@ -39,7 +40,12 @@ def parse_local_options(*args):
     return updated_defaults
 
 
-_possible_option_paths = [Path("~/.bioTEA/config.yaml"), Path("~/.bioTEA/config.yml")]
+_possible_option_paths = [
+    Path("~/.bioTEA/config.yaml"),
+    Path("~/.bioTEA/config.yml"),
+    Path("~/.config/bioTEA/config.yaml"),
+    Path("~/.config/bioTEA/config.yaml"),
+]
 _all_local_opts = []
 for path in _possible_option_paths:
     if not path.exists():

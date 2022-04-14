@@ -1,33 +1,30 @@
-from enum import Enum
+import importlib.resources as pkg_resources
 import itertools
 import logging
+import string
+from collections import Counter
+from enum import Enum
 from itertools import permutations
 from pathlib import Path
 from typing import Optional, Union
-from collections import Counter
-import importlib.resources as pkg_resources
-import string
 
-from fuzzywuzzy import fuzz
 import pandas as pd
 import typer
-from colorama import Fore
 import yaml
+from colorama import Fore
+from fuzzywuzzy import fuzz
 
-from bioTea import pour
+from bioTea import pour, resources
 from bioTea.utils.errors import BioTeaError, ErrorManager, RaiserHandler
-from bioTea.utils.path_checker import (
-    is_pathname_valid,
-)
+from bioTea.utils.path_checker import is_pathname_valid
+from bioTea.utils.strings import WIZARD_LOGO
 from bioTea.utils.tools import (
+    Replacer,
     ask_choices,
     contains_numbers,
     recursive_dict_update,
     user_input,
-    Replacer,
 )
-from bioTea.utils.strings import WIZARD_LOGO, TEA_LOGO
-from bioTea import resources
 
 log = logging.getLogger(__name__)
 
@@ -352,8 +349,6 @@ def wizard_unhandled():
 
     if best_platform == ValidManufacturers.affymetrix:
         future_commands.append("biotea prepare affymetrix ")
-
-    pass
 
 
 def wizard(*args, **kwargs):

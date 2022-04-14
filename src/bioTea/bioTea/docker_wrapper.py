@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 COMPATIBLE_VERSIONS = ["bleeding"]
 """Compatible GATTACA versions that can be ran by bioTEA"""
 
-REPO = "cmalabscience/biotea_box"
+REPO = "cmalabscience/biotea-box"
 
 POSSIBLE_LOG_LEVELS = ("info", "debug", "error", "warning", "disable")
 
@@ -63,7 +63,9 @@ def get_installed_versions(
     client: docker.DockerClient = docker.from_env(),
 ) -> list[GattacaVersion]:
     local_images = client.images.list(REPO)
-    local_images = [local_image.tags[0][22:] for local_image in local_images]
+    local_images = [
+        local_image.tags[0][(len(REPO) + 1) :] for local_image in local_images
+    ]
     return [GattacaVersion(version) for version in local_images]
 
 
@@ -95,15 +97,15 @@ def delete_biotea_box_version(
 
 
 def get_all_versions() -> list[GattacaVersion]:
-    endpoint = (
-        "https://registry.hub.docker.com/v1/repositories/cmalabscience/biotea_box/tags"
-    )
+    endpoint = f"https://registry.hub.docker.com/v1/repositories/{REPO}/tags"
     res = requests.get(endpoint, timeout=20)
 
     images = json.loads(res.text)
+    print(images)
 
     versions = []
     for image in images:
+        print(image)
         version = GattacaVersion(image["name"])
         if type(version.realversion) is LegacyVersion:
             continue
@@ -401,7 +403,7 @@ def run_biotea_box(
 
     if log_name == "auto":
         now = datetime.today().strftime("%Y-%m-%d-%H:%M:%S")
-        log_name = f"GATTACA_{now}"
+        log_name = f"bioTEA_{now}"
 
     log.debug(f"Parsing arguments with interface '{type(interface)}'")
     try:
@@ -440,9 +442,9 @@ def run_biotea_box(
             detach=True,
             mounts=[
                 # Needs the `str` or the internal serializer dies
-                Mount("/GATTACA/target", str(output_anchor), type="bind"),
-                Mount("/GATTACA/input", str(input_anchor), type="bind", read_only=True),
-                Mount("/GATTACA/logs", str(log_anchor), type="bind"),
+                Mount("/bioTEA/target", str(output_anchor), type="bind"),
+                Mount("/bioTEA/input", str(input_anchor), type="bind", read_only=True),
+                Mount("/bioTEA/logs", str(log_anchor), type="bind"),
             ],
         )
     except Exception as e:

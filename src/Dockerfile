@@ -1,13 +1,13 @@
 FROM cmalabscience/biotea-base:0.1.0
 
 # Make the hardcoded mountpoints for the outputs and inputs
-RUN mkdir /biotea && \
-  mkdir /biotea/target && mkdir /biotea/input && mkdir /biotea/logs
+RUN mkdir /bioTEA && \
+  mkdir /bioTEA/target && mkdir /bioTEA/input && mkdir /bioTEA/logs
 
-WORKDIR /biotea
+WORKDIR /bioTEA
 
 # Copy the source code
-COPY ./biotea/ /biotea/
+COPY ./box/ /bioTEA/
 
 # Setup the entrypoint
-ENTRYPOINT [ "/biotea/entrypoint.R" ]
+ENTRYPOINT [ "/bioTEA/entrypoint.R" ]
