@@ -17,7 +17,7 @@ import typer
 from docker.types import Mount
 from packaging.version import LegacyVersion, parse
 
-from bioTea.utils.errors import ImageNotFoundError
+from bioTea.utils.errors import ContainerExitError, ImageNotFoundError
 from bioTea.utils.path_checker import is_path_exists_or_creatable_portable
 from bioTea.utils.tools import ConsoleWindow
 
@@ -436,7 +436,6 @@ def run_biotea_box(
         container = client.containers.run(
             image,
             command=composed_command,
-            remove=True,
             stderr=True,
             detach=True,
             mounts=[
@@ -457,6 +456,7 @@ def run_biotea_box(
     except KeyboardInterrupt:
         log.warn("Got shutdown signal. Killing container.")
         container.kill()
+        container.remove()
         raise KeyboardInterrupt
 
     try:
@@ -466,5 +466,13 @@ def run_biotea_box(
     except Exception:
         pass
 
-    log.debug("Container exited.")
+    # Reload the container status
+    container.reload()
+    statuscode = container.wait()["StatusCode"]
+    log.debug(f"Container exited with status {container.status} [{statuscode}]")
+    log.debug(f"Removing container...")
+    container.remove()
+    if statuscode != 0:
+        raise ContainerExitError(f"Container had a non-zero exit status: {statuscode}")
+
     return 0

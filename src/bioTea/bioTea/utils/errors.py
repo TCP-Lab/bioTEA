@@ -31,6 +31,10 @@ class InvalidPathError(BioTeaError):
     pass
 
 
+class ContainerExitError(BioTeaError):
+    pass
+
+
 # --- #
 
 
