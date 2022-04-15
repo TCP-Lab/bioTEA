@@ -12,26 +12,38 @@ class BioTeaError(Exception):
 
 
 class InvalidGeoId(BioTeaError):
+    """Error raised when an input GEO id is invalid or not found."""
+
     pass
 
 
 class UnsupportedChip(BioTeaError):
+    """Raised when the chip ID is unsupported."""
+
     pass
 
 
 class SanityError(BioTeaError):
+    """Raised when a sanity check fails."""
+
     pass
 
 
 class ImageNotFoundError(BioTeaError):
+    """Raised when remote or local images are not found."""
+
     pass
 
 
 class InvalidPathError(BioTeaError):
+    """Raised when a given path is invalid."""
+
     pass
 
 
 class ContainerExitError(BioTeaError):
+    """Raised when the biotea-box exits with an error"""
+
     pass
 
 
@@ -82,7 +94,7 @@ class ErrorManager:
             elif any(
                 (
                     compatible_handlers := [
-                        e for x in self.handlers.keys if issubclass(x, e)
+                        e for x in self.handlers.keys() if issubclass(x, type(e))
                     ]
                 )
             ):
@@ -91,6 +103,9 @@ class ErrorManager:
                         f"Multiple equally satisfactory handlers found ({compatible_handlers}). Using the last one added."
                     )
                 target = compatible_handlers[-1]
+            else:
+                log.warn("No compatible handlers found. Raising the error.")
+                raise e
 
             self.handlers[target].handle(
                 error=e,

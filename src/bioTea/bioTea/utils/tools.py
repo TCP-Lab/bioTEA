@@ -1,6 +1,6 @@
 from __future__ import annotations
-from copy import copy
 
+import collections
 import ftplib
 import gzip
 import logging
@@ -8,8 +8,8 @@ import os
 import sys
 import tarfile
 import zipfile
-import collections
 from collections import deque
+from copy import copy
 from math import floor
 from pathlib import Path
 from pprint import pprint
@@ -114,8 +114,8 @@ def user_input(
     while True:
         raw_input = input(prompt)
 
-        if test(input):
-            return input
+        if test(raw_input.strip()):
+            return raw_input
 
         if not retry:
             raise ValueError(
@@ -363,7 +363,7 @@ def parse_biotea_box_options(path: Path) -> dict:
     with path.open("r") as stream:
         raw_args = yaml.safe_load(stream)
 
-    # I need to parse the raw dictionary to a shallow input redable by GATTACA
+    # I need to parse the raw dictionary to a shallow input redable by the box
     # The options that can be accepted are in `docker_wrapper.py/AnalizeInterface`,
     # which in turn looks to the entrypoint of the analize module.
     try:

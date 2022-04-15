@@ -1,10 +1,12 @@
 import importlib.resources as pkg_resources
 import itertools
 import logging
+import shutil
 import string
 from collections import Counter
 from enum import Enum
 from itertools import permutations
+from math import floor
 from pathlib import Path
 from typing import Optional, Union
 
@@ -13,6 +15,7 @@ import typer
 import yaml
 from colorama import Fore
 from fuzzywuzzy import fuzz
+from tqdm import tqdm
 
 from bioTea import pour, resources
 from bioTea.utils.errors import BioTeaError, ErrorManager, RaiserHandler
@@ -30,27 +33,37 @@ log = logging.getLogger(__name__)
 
 
 class ValidManufacturers(Enum):
-    agilent = "agilent"
-    affymetrix = "affymetrix"
+    def __str__(self) -> str:
+        return str(self.value)
+
+    agilent = "Agilent Technologies"
+    affymetrix = "Affymetrix"
 
 
 def glob_manufacturer(manufacturer_string) -> ValidManufacturers:
     tiers = {}
     for value in ValidManufacturers.__members__.values():
-        tiers[manufacturer_string] = fuzz.ratio(value, manufacturer_string)
-    best_match = max(tiers)
+        tiers[str(value)] = fuzz.ratio(str(value), manufacturer_string)
+    best_match_score = max(tiers.values())
     best_key = max(tiers, key=tiers.get)
-    if best_match < 60:
+    if best_match_score < 60:
         log.warn(
-            f"Unsure about the manufacturer. I think it is {best_key}, but at a confidece of only {best_match}. Is '{manufacturer_string}' supported?"
+            f"Unsure about the manufacturer. I think it is {best_key}, but at a confidence of only {best_match_score}. Is '{manufacturer_string}' supported?"
         )
+
+    return best_key
 
 
 def sanitize_design_string(values: list) -> list[str]:
     # Character-only
-    if any([contains_numbers(x) for x in values]):
+    def contains_illegal(x):
+        return any([y in ", -" for y in x])
+
+    if any(
+        [contains_numbers(x) for x in values] + [contains_illegal(x) for x in values]
+    ):
         log.warn(
-            "There are numbers in the design string. Getting rid of them by replacing the factors."
+            "There are illegal characters in the design string. Getting rid of them by replacing the factors."
         )
         replacer = Replacer(list(string.ascii_uppercase))
         sanitized_values = replacer.sanitize(values)
@@ -62,7 +75,7 @@ def sanitize_design_string(values: list) -> list[str]:
             )
         )
         return sanitized_values
-    log.debug("No nood to sanitize input design string.")
+    log.debug("No need to sanitize input design string.")
     return values
 
 
@@ -85,7 +98,7 @@ def interactive_metadata_to_biotea_box_options(
     primary_var: Optional[str] = None,
     use_all_contrasts: bool = False,
 ) -> dict:
-    log.debug("Generating a GATTACA_options.yaml file.")
+    log.debug("Generating a BioTEA_box_options.yaml file.")
     log.warn(
         "Due to limitations in parsing yaml data, the helpful comments in the "
         + "options will be lost by generating the file in this way. "
@@ -211,7 +224,7 @@ def interactive_metadata_to_biotea_box_options(
 
     log.info("Updating defaults with user data.")
     defaults = yaml.safe_load(
-        pkg_resources.open_text(resources, "GATTACA_default_options.yaml")
+        pkg_resources.open_text(resources, "bioTEA_run_default_options.yaml")
     )
     log.debug("Loaded defaults.")
 
@@ -306,6 +319,10 @@ def wizard_unhandled():
     )
     typer.echo("You can exit at any time by pressing CTRL+C")
     typer.echo(
+        Fore.YELLOW
+        + "WARNING: The wizard is still experimental, and may produce errors. Use with caution."
+    )
+    typer.echo(
         "Select a folder (that will be created if non-existant) to use as a working directory:"
     )
     staging_path = user_input(
@@ -313,6 +330,7 @@ def wizard_unhandled():
         is_pathname_valid,
         retry_prompt="The path seems invalid. Try again.",
     )
+    log.debug(f"Got for path: {staging_path}")
 
     staging_path, temp_path = pour.stage_new_analysis(staging_path)
 
@@ -323,7 +341,7 @@ def wizard_unhandled():
         retry_prompt="That seems wrong. GEO series should start with 'GSE...'. Try again.",
     )
 
-    series = pour.retrieve_geo_data(staging_path, geo_id)
+    series = pour.retrieve_geo_data(staging_path, geo_id, temp_dir=temp_path)
 
     new_options = interactive_metadata_to_biotea_box_options(series.generate_metadata())
 
@@ -341,18 +359,82 @@ def wizard_unhandled():
     )
     if not is_platform_correct:
         log.error(
-            "Cannot proceed. Prepare the data manually, then run `biotea initialize` followed by `biotea analise yourself."
+            "Cannot proceed. Prepare the data manually, then run `biotea initialize` followed by `biotea analyze yourself."
         )
         raise typer.Abort
 
-    future_commands = []
+    remove_controls = typer.confirm("Remove control probes from the input data?", True)
+    if typer.confirm(
+        "Reduce the number of diagnostic plots (to 10% of all samples)?", True
+    ):
+        plot_number = floor(len(series.samples) * 0.1)
+    else:
+        plot_number = len(series.samples)
+    log.debug(f"Plot number set to be {plot_number}")
 
+    for sample in tqdm(series.samples, "Unpacking samples..."):
+        shutil.unpack_archive(
+            sample.suppl_data_local_path, temp_path / "unpacked_raw_samples"
+        )
+
+    expression_file_path = staging_path / "expression_matrix.csv"
     if best_platform == ValidManufacturers.affymetrix:
-        future_commands.append("biotea prepare affymetrix ")
+        log.info("Preparing affymetrix data.")
+
+        pour.prepare_affymetrix(
+            temp_path / "unpacked_raw_samples",
+            expression_file_path,
+            remove_controls=remove_controls,
+            plot_number=plot_number,
+            plot_size=f"{new_options['general']['plots']['plot_width']},{new_options['general']['plots']['plot_height']}",
+            use_png=new_options["general"]["plots"]["save_png"],
+        )
+    elif best_platform == ValidManufacturers.agilent:
+        log.info("Preparing agilent data.")
+
+        # Some magic to get the prefix
+        suffix = Path(series.samples[0].suppl_data_local_path).suffix
+        log.debug(f"Suffix automatically detected to be '{suffix}'")
+        pour.prepare_agilent(
+            temp_path / "unpacked_raw_samples",
+            expression_file_path,
+            # The \ is there to escape the .
+            grep_pattern=f"\{suffix}",
+            remove_controls=remove_controls,
+            plot_number=plot_number,
+            plot_size=f"{new_options['general']['plots']['plot_width']},{new_options['general']['plots']['plot_height']}",
+            use_png=new_options["general"]["plots"]["save_png"],
+        )
+
+    log.info(
+        f"Done preparing the input data. Prepared data is @ {staging_path / 'expression_matrix.csv'}"
+    )
+
+    log.info("Running container.")
+    log.debug("Writing options file.")
+    options_path = staging_path / "wizard_box_options.yaml"
+    with options_path.open("w+") as fileout:
+        yaml.dump(new_options, fileout)
+
+    pour.run_biotea_box_analysis(
+        options_path=options_path,
+        output_dir=staging_path / "analysis",
+        input_file=expression_file_path,
+    )
+
+    typer.echo(
+        f"The analysis ended. Take a look inside {staging_path} for the output. Temporary files will be cleaned automatically."
+    )
+    log.info("Wizard completed.")
 
 
 def wizard(*args, **kwargs):
-    wizard_manager = ErrorManager(wizard_unhandled)
+    # Without this, the error manager tries to give args to the wizard,
+    # which causes it to crash.
+    def _wrapper(*args, **kwargs):
+        wizard_unhandled()
+
+    wizard_manager = ErrorManager(_wrapper)
 
     wizard_manager.add_handler(BioTeaError, RaiserHandler())
 

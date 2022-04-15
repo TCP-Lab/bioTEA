@@ -10,7 +10,6 @@ import typer
 from colorama import Fore
 
 from bioTea import __version__
-from bioTea.bioTea.utils.strings import TEA_LOGO
 from bioTea.classes import GeoSample
 from bioTea.docker_wrapper import (
     AnalyzeInterface,
@@ -23,7 +22,8 @@ from bioTea.docker_wrapper import (
     pull_biotea_box_version,
     run_biotea_box,
 )
-from bioTea.utils.errors import SanityError
+from bioTea.utils.errors import ImageNotFoundError, SanityError
+from bioTea.utils.strings import TEA_LOGO
 from bioTea.utils.tools import (
     PathLike,
     download_ftp,
@@ -47,7 +47,8 @@ def stage_new_analysis(staging_path: PathLike) -> Tuple[Path, Path]:
         and second element the path to the temporary folder.
     """
     log.info("Staging new analysis project...")
-    staging_path = Path(staging_path).resolve()
+    log.debug(f"Resolving {staging_path}")
+    staging_path = Path(staging_path).expanduser().resolve()
     if not staging_path.exists():
         os.makedirs(staging_path)
     log.debug(f"Staged {staging_path}.")
@@ -58,8 +59,17 @@ def stage_new_analysis(staging_path: PathLike) -> Tuple[Path, Path]:
     return (staging_path, temp_dir)
 
 
-def retrieve_geo_data(output_folder: PathLike, geo_id: str):
-    staging_path, temp_dir = stage_new_analysis(output_folder)
+def retrieve_geo_data(
+    output_folder: PathLike,
+    geo_id: str,
+    temp_dir: Optional[Path] = None,
+    unpack_to_temp: bool = False,
+):
+    if temp_dir is None:
+        staging_path, temp_dir = stage_new_analysis(output_folder)
+    else:
+        staging_path = make_path_valid(output_folder)
+
     geo_series = get_minimal_from_geo(geo_id, temp_dir)
 
     log.info("Retrieving sample raw data...")
@@ -74,10 +84,13 @@ def retrieve_geo_data(output_folder: PathLike, geo_id: str):
         log.warn("Downloaded more than one file. Using just the first one.")
 
     log.debug("Unpacking downloaded archive...")
-    shutil.unpack_archive(list(downloaded.values())[0], temp_dir / "unpacked_samples")
-    unpacked_files = os.listdir(temp_dir / "unpacked_samples")
+    unpack_dir = temp_dir if unpack_to_temp else staging_path
+    unpack_dir /= "unpacked_samples"
+    log.debug(f"Unpacking dir is {unpack_dir}")
+    shutil.unpack_archive(list(downloaded.values())[0], unpack_dir)
+    unpacked_files = os.listdir(unpack_dir)
 
-    log.debug(f"Unpacked {len(unpacked_files)} files.")
+    log.debug(f"Unpacked {len(unpacked_files)} files: {unpacked_files}")
 
     log.debug("Sanity Check: Testing congruency with MINiML file...")
     miniml_samples = [
@@ -93,9 +106,7 @@ def retrieve_geo_data(output_folder: PathLike, geo_id: str):
 
     log.debug("Adding real paths to sample objects...")
     geo_series.samples = [
-        add_realpath(
-            sample, temp_dir / "unpacked_samples" / sample.suppl_data_ftp.split("/")[-1]
-        )
+        add_realpath(sample, unpack_dir / sample.suppl_data_ftp.split("/")[-1])
         for sample in geo_series.samples
     ]
 
@@ -140,8 +151,14 @@ def update_tool(yes: bool = False):
     """
     # TODO: Once this is released on PyPA, implement checks for the tool update.
     log.info("Checking containers for updates...")
-    if (latest := get_latest_version()) in get_installed_versions():
-        log.info("Containers are up-to-date.")
+    try:
+        if (latest := get_latest_version()) in get_installed_versions():
+            log.info("Containers are up-to-date.")
+            return
+    except ImageNotFoundError:
+        log.error(
+            "No remote versions found, therefore there is no latest version. Cannot update."
+        )
         return
 
     if not yes:

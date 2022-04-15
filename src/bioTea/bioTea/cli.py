@@ -10,9 +10,9 @@ import yaml
 
 import bioTea.pour as pour
 from bioTea import resources
-from bioTea.utils.strings import TEA_LOGO, WIZARD_LOGO
+from bioTea.utils.strings import TEA_LOGO
 from bioTea.utils.tools import make_path_valid
-from bioTea.wizard import interactive_metadata_to_biotea_box_options
+from bioTea.wizard import interactive_metadata_to_biotea_box_options, wizard
 
 log = logging.getLogger(__name__)
 
@@ -70,25 +70,24 @@ def info_biotea_command():
 
 @cli_root.command(name="update")
 def update_tool_command(
-    yes: bool = typer.Option(False, help="Skip the confirmation prompt and update")
+    force: bool = typer.Option(
+        False, help="Skip the confirmation prompt and update immediately"
+    )
 ):
     """Check bioTEA and the container repos for updates.
 
     This command also updates the latest container, if needed.
     """
-    pour.update_tool(yes=yes)
+    pour.update_tool(yes=force)
 
 
-@cli_root.command(name="wizard", hidden=True)
+@cli_root.command(name="wizard")
 def run_wizard_command():
     """Run the bioTEA wizard.
 
     The wizard helps in setting up, running, and exploring a GATTACA analysis.
     """
-    print(
-        "You got to a hidden command! This is not implemented yet. In the meantime, get a nice logo:"
-    )
-    print(WIZARD_LOGO)
+    wizard()
 
 
 @cli_root.command(name="retrieve")
@@ -177,7 +176,7 @@ def prepare_affymetrix_command(
     )
 
 
-@cli_root.command(name="analize")
+@cli_root.command(name="analyze")
 def run_biotea_box_analysis_command(
     options_path: Path = typer.Argument(..., help="Path to the options file"),
     output_dir: Path = typer.Argument(..., help="Path to the output directory"),

@@ -101,21 +101,26 @@ def get_all_versions() -> list[GattacaVersion]:
     res = requests.get(endpoint, timeout=20)
 
     images = json.loads(res.text)
-    print(images)
 
     versions = []
     for image in images:
-        print(image)
         version = GattacaVersion(image["name"])
         if type(version.realversion) is LegacyVersion:
+            log.debug(f"Version '{version}' discarded as it is a Legacy version.")
             continue
         versions.append(version)
+
+    if not versions:
+        log.warn("No valid remote versions have been found.")
 
     return versions
 
 
 def get_latest_version() -> GattacaVersion:
-    return sorted(get_all_versions())[-1]
+    all_vers = get_all_versions()
+    if all_vers:
+        return sorted(all_vers)[-1]
+    raise ImageNotFoundError("No valid 'latest' version found.")
 
 
 # Some checks
@@ -442,9 +447,14 @@ def run_biotea_box(
             detach=True,
             mounts=[
                 # Needs the `str` or the internal serializer dies
-                Mount("/bioTEA/target", str(output_anchor), type="bind"),
-                Mount("/bioTEA/input", str(input_anchor), type="bind", read_only=True),
-                Mount("/bioTEA/logs", str(log_anchor), type="bind"),
+                Mount("/bioTEA/target", str(output_anchor.absolute()), type="bind"),
+                Mount(
+                    "/bioTEA/input",
+                    str(input_anchor.absolute()),
+                    type="bind",
+                    read_only=True,
+                ),
+                Mount("/bioTEA/logs", str(log_anchor.absolute()), type="bind"),
             ],
         )
     except Exception as e:
