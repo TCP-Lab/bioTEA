@@ -40,6 +40,10 @@ switches:
   # Should re-run normalization on the data? This is useful if the data was
   # not normalized beforehand.
   renormalize: false # bool
+  # If the data comes from a RNA-seq experiment, it has to be converted to
+  # continuous expression values with `voom` before running the DEA.
+  # Set this to true if the input data is count data.
+  convert_counts: false # bool
   # Run Differential gene expression detection with `limma`
   # This uses parametric tests to find DEGs.
   limma: true # bool

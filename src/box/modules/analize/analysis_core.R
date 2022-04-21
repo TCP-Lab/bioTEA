@@ -971,6 +971,7 @@ bioTEA <- function(
   annotation_database = TRUE,
   dryrun = FALSE,
   renormalize = FALSE,
+  convert_counts = FALSE,
   run_limma_analysis = TRUE,
   run_rankprod_analysis = TRUE,
   batches = NA,
@@ -1139,11 +1140,9 @@ bioTEA <- function(
   log_data(..corrTable, "Correspondence Table", FALSE)
 
   if (write_data_to_disk) {
-    write.csv(
-      ..corrTable,
-      "correspondence_table.csv",
-      row.names = FALSE, quote = TRUE
-    )
+    corr_table_out <- file.path(output.dir, "correspondence_table.csv")
+    write.csv(..corrTable, corr_table_out, row.names = FALSE, quote = TRUE)
+    register_for_ownership(corr_table_out)
     log$info(paste("'correspondence_table.csv' has been saved in", output.dir))
   }
 

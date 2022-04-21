@@ -283,6 +283,10 @@ def interactive_general_options():
         "Renormalize input data before analyzing (useful if the input data is really not homogeneous even after preparation)?",
         False,
     )
+    convert_counts = typer.confirm(
+        "Is the input data a count matrix (from RNA-seq)? Should the data be made continuous with `voom`?",
+        False,
+    )
     while True:
         limma = typer.confirm("Run the limma analysis?", True)
         rp = typer.confirm("Run the rankproduct analysis?", True)
@@ -305,6 +309,7 @@ def interactive_general_options():
         "switches": {
             "dryrun": dry,
             "renormalize": renorm,
+            "convert_counts": convert_counts,
             "limma": limma,
             "rankproduct": rp,
         },

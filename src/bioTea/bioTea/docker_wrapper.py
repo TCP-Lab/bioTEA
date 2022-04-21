@@ -321,6 +321,7 @@ class AnalyzeInterface(GattacaInterface):
         "annotation_database": GattacaArgument(is_(bool), True),
         "dryrun": GattacaArgument(is_(bool), False),
         "renormalize": GattacaArgument(is_(bool), False),
+        "convert_counts": GattacaArgument(is_(bool), False),
         "run_limma_analysis": GattacaArgument(is_(bool), True),
         "run_rankprod_analysis": GattacaArgument(is_(bool), True),
         "batches": GattacaArgument(na_or(is_list_of(is_valid_design_string)), "NA"),

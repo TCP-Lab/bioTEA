@@ -45,6 +45,7 @@ defaults = list(
     annotation_database = TRUE,
     dryrun = FALSE,
     renormalize = FALSE,
+    convert_counts = FALSE,
     run_limma_analysis = TRUE,
     run_rankprod_analysis = TRUE,
     batches = NA,
