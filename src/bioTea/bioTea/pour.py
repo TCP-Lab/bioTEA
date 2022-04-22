@@ -214,8 +214,8 @@ def prepare_agilent(
     verbose: bool = False,
 ):
     """Prepare agilent expression data for analysis."""
-    make_path_valid(input_dir, dir=True)
-    make_path_valid(output_file)
+    input_dir = make_path_valid(input_dir, dir=True)
+    output_file = make_path_valid(output_file)
 
     if version == "latest":
         version = get_latest_version()
@@ -274,8 +274,8 @@ def prepare_affymetrix(
     verbose: bool = False,
 ):
     """Prepare affymetrix expression data for analysis."""
-    make_path_valid(input_dir, dir=True)
-    make_path_valid(output_file)
+    input_dir = make_path_valid(input_dir, dir=True)
+    output_file = make_path_valid(output_file)
 
     if version == "latest":
         version = get_latest_version()
@@ -333,9 +333,9 @@ def run_biotea_box_analysis(
     print(TEA_LOGO)
     log.info(f"Biotea version {__version__}")
 
-    make_path_valid(options_path)
-    make_path_valid(output_dir)
-    make_path_valid(input_file)
+    options_path = make_path_valid(options_path)
+    output_dir = make_path_valid(output_dir)
+    input_file = make_path_valid(input_file)
 
     if version == "latest":
         version = get_latest_version()
@@ -378,7 +378,7 @@ def annotate_file(
     verbose: bool = False,
 ):
     """Annotate some expression data or DEA output with annotation data."""
-    make_path_valid(output)
+    output = make_path_valid(output)
 
     if annotation_database != "internal":
         # TODO: Remove this once `annotations generate` gets implemented.

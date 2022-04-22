@@ -310,15 +310,9 @@ make_limma_design <- function(groups, ...) {
 #'   It is a data.frame with row names as probes and column as samples. The
 #'   col names are assumed to start with one of the possible levels in the
 #'   experimental design.
-#' @param groups A vector describing the groups of the data, in the same order
-#'   as the columns.
+#' @param design The design matrix for the limma analysis.
 #' @param contrasts A character vector describing contrasts suitable for
 #'   `limma::makeContrasts`.
-#' @param pairings A vector describing the pairings of the data or NULL if no
-#'   pairings are present. Must be the same length as the columns of the
-#'   expression_set.
-#' @param other_vars Other variables to include in the analysis as a list.
-#'   Leave to `null` if no other vars are included.
 #' @param fc_threshold The absolute Fold-change threshold to use to consider
 #'   a gene as differentially expressed, regardless of the P-value or FDR.
 #'
@@ -328,31 +322,21 @@ make_limma_design <- function(groups, ...) {
 #'
 #' @author FeAR, Hedmad
 run_limma <- function(
-  expression_set, groups, contrasts,
-  other_vars = NULL,
+  expression_set, design, contrasts,
   fc_threshold = 0.5
 ) {
   log$info("Running differential expression analysis by limma.")
-  log$info("Making limma design matrix...")
-
-  if ( !is.null(other_vars) ) {
-    limma_design <- do.call(make_limma_design, c(list(groups = groups), other_vars))
-  } else {
-    limma_design <- make_limma_design(groups = groups)
-  }
-
-  log_data(limma_design, "Limma design matrix", shorten = FALSE)
 
   log$info("Making contrasts matrix...")
   makeContrasts(
     contrasts = contrasts,
-    levels = limma_design
+    levels = design
   ) -> contrast_matrix
 
   log_data(contrast_matrix, "Contrast Matrix", shorten = FALSE)
 
   log$info("Computing contrasts...")
-  lmFit(expression_set, limma_design) -> limma_fit
+  lmFit(expression_set, design) -> limma_fit
 
   limma_fit |> contrasts.fit(contrast_matrix) |> eBayes() -> limma_Bayes
 
@@ -369,10 +353,7 @@ run_limma <- function(
       limma_Bayes, coef = i, number = Inf,
       adjust.method = "BH", sort.by = "B"
     )
-    average <- rowMeans(expression_set)
-    average <- as.data.frame(average)
-    colnames(average) <- "AveExpr"
-    DEGs.limma[[i]] |> merge(average, by = "row.names") |> column_to_rownames("Row.names") -> DEGs.limma[[i]]
+    log$info(paste(colnames(DEGs.limma[[i]]), collapse = ", "))
     pb$tick()
   }
 
@@ -1115,7 +1096,7 @@ bioTEA <- function(
     extra_limma_vars <- NULL
   }
 
-  log$info("Experimental desing loaded.")
+  log$info("Experimental design loaded.")
 
   # Tidy Sample Names According to the Experimental Design
   # Create a new vector containing tidy group names
@@ -1169,6 +1150,36 @@ bioTEA <- function(
 
   log$info("Design loaded and approved.")
   pitstop("")
+
+  # ---- Generate and log the limma design ----
+  log$info("Making design matrix...")
+  additional_limma_vars <- c(
+      if (paired_mode) {list(pairings = experimental_design$pairings)} else {NULL},
+      if (!is.null(batches)) {list(batches = batches)} else {NULL},
+      if (! is.null(extra_limma_vars)) {extra_limma_vars} else {NULL}
+    )
+
+  limma_design_matrix <- if (is.null(additional_limma_vars)) {
+    make_limma_design(groups = experimental_design$groups)
+  } else {
+    do.call(make_limma_design, c(list(groups = experimental_design$groups), other_vars))
+  }
+
+  # ---- Count transformation with voom ----
+  if (convert_counts) {
+    log$info("Converting counts to continuous values.")
+    normalization_factor <- edgeR::calcNormFactors(
+      expression_set, method = "TMM"
+    )
+    voomed_exprs <- voom(
+      expression_set,
+      design = limma_design_matrix,
+      lib.size = colSums(expression_set) * normalization_factor
+    )
+    expression_set <- as.data.frame(voomed_exprs$E)
+    log_data(expression_set, "Continuous expression from counts")
+    rm(voomed_exprs)
+  }
 
 
   # ---- Normalization ----
@@ -1320,15 +1331,8 @@ bioTEA <- function(
 
   # ---- DE by Limma ----
   if (run_limma_analysis) {
-    additional_limma_vars <- c(
-      if (paired_mode) {list(pairings = experimental_design$pairings)} else {NULL},
-      if (!is.null(batches)) {list(batches = batches)} else {NULL},
-      if (! is.null(extra_limma_vars)) {extra_limma_vars} else {NULL}
-    )
-
     DEGs.limma <- run_limma(
-      expression_set, groups = experimental_design$groups, contrasts = raw_contrasts,
-      other_vars = additional_limma_vars,
+      expression_set, design = limma_design_matrix, contrasts = raw_contrasts,
       fc_threshold = fc_threshold
     )
 

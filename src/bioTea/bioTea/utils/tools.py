@@ -39,7 +39,9 @@ class TempWorkdir:
     """
 
     def __init__(self, tempwd: PathLike) -> None:
-        tempwd = Path(tempwd)
+        tempwd = Path(tempwd).expanduser().resolve()
+        if not tempwd.exists():
+            os.makedirs(tempwd)
 
         self.last_wd = os.getcwd()
         self.new_wd = tempwd
@@ -47,7 +49,7 @@ class TempWorkdir:
     def __enter__(self):
         os.chdir(self.new_wd)
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         os.chdir(self.last_wd)
 
 
@@ -346,7 +348,7 @@ def make_path_valid(path: Path, dir: bool = False):
     Returns:
         Path: The same path in input.
     """
-    path = path.resolve()
+    path = path.expanduser().resolve()
     if is_pathname_valid(str(path)) and not path.exists():
         if dir:
             os.makedirs(path, exist_ok=True)
@@ -375,11 +377,11 @@ def parse_biotea_box_options(path: Path) -> dict:
             "min_groupwise_presence": raw_args["design"]["filters"][
                 "min_groupwise_presence"
             ],
-            "slowmode": raw_args["general"]["slowmode"],
             "show_data_snippets": raw_args["general"]["show_data_snippets"],
             "annotation_database": raw_args["general"]["annotation_database"],
             "dryrun": raw_args["switches"]["dryrun"],
             "renormalize": raw_args["switches"]["renormalize"],
+            "convert_counts": raw_args["switches"]["convert_counts"],
             "run_limma_analysis": raw_args["switches"]["limma"],
             "run_rankprod_analysis": raw_args["switches"]["rankproduct"],
             "group_colors": raw_args["design"]["group_colors"],

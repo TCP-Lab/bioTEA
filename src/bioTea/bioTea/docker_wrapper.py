@@ -316,7 +316,6 @@ class AnalyzeInterface(GattacaInterface):
         "min_log2_expression": GattacaArgument(is_(Number), 4.0),
         "fc_threshold": GattacaArgument(is_(Number), 0.5),
         "min_groupwise_presence": GattacaArgument(is_(Number), 0.8),
-        "slowmode": GattacaArgument(is_(bool), False),
         "show_data_snippets": GattacaArgument(is_(bool), True),
         "annotation_database": GattacaArgument(is_(bool), True),
         "dryrun": GattacaArgument(is_(bool), False),
@@ -484,8 +483,13 @@ def run_biotea_box(
     statuscode = container.wait()["StatusCode"]
     log.debug(f"Container exited with status {container.status} [{statuscode}]")
     log.debug(f"Removing container...")
+    container_logs = container.logs().decode()
+    log.info(container_logs)
     container.remove()
     if statuscode != 0:
-        raise ContainerExitError(f"Container had a non-zero exit status: {statuscode}")
+        container_error = "\n".join(container_logs.split("\n")[:-5])
+        raise ContainerExitError(
+            f"Container had a non-zero exit status: {statuscode}. Last five lines of container output: {container_error}"
+        )
 
     return 0

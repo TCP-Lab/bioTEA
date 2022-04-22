@@ -40,7 +40,6 @@ defaults = list(
     min_log2_expression = 4,
     fc_threshold = 0.5,
     min_groupwise_presence = 0.8,
-    slowmode = FALSE,
     show_data_snippets = TRUE,
     annotation_database = TRUE,
     dryrun = FALSE,
