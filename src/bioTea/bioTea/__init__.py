@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 from colorama import Back, Fore, Style, init
 
-from . import resources
+from bioTea import resources
 
 init(autoreset=True)
 
