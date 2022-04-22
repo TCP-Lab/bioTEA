@@ -14,7 +14,7 @@ from math import floor
 from pathlib import Path
 from pprint import pprint
 from shutil import get_terminal_size
-from typing import Callable, Optional, TypeAlias, Union
+from typing import Callable, Optional, Union
 
 import requests
 import typer
@@ -27,7 +27,10 @@ from bioTea.utils.path_checker import is_pathname_valid
 
 log = logging.getLogger(__name__)
 
-PathLike: TypeAlias = Union[Path, str]
+# PathLike: TypeAlias = Union[Path, str]
+class PathLike:
+    pass
+
 
 CompressedFile = Union[tarfile.TarFile, zipfile.ZipFile, gzip.GzipFile]
 

@@ -78,7 +78,7 @@ def pull_biotea_box_version(
         raise ImageNotFoundError(str(version))
 
     log.info(f"Pulling remote image {version}...")
-    client.images.pull(f"{REPO}:{version.realversion}")
+    client.images.pull(f"{REPO}:{version.raw_version}")
     log.info("Pulled image.")
 
 
