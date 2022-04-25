@@ -243,7 +243,7 @@ def prepare_agilent(
         "plot_width": plot_width,
         "plot_height": plot_height,
         "png_ppi": 600,
-        "enumerate_plots": True,
+        "enumerate_plots": False,
     }
 
     response = run_biotea_box(
@@ -302,7 +302,7 @@ def prepare_affymetrix(
         "plot_width": plot_width,
         "plot_height": plot_height,
         "png_ppi": 600,
-        "enumerate_plots": True,
+        "enumerate_plots": False,
     }
 
     response = run_biotea_box(

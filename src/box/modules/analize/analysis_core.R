@@ -1162,7 +1162,7 @@ bioTEA <- function(
   limma_design_matrix <- if (is.null(additional_limma_vars)) {
     make_limma_design(groups = experimental_design$groups)
   } else {
-    do.call(make_limma_design, c(list(groups = experimental_design$groups), other_vars))
+    do.call(make_limma_design, c(list(groups = experimental_design$groups), additional_limma_vars))
   }
 
   # ---- Count transformation with voom ----

@@ -159,21 +159,34 @@ run_module <- function(module_name, module_args, exit_immediately = FALSE) {
 }
 
 # Run the desired module(s)
-switch(
-    COMMAND,
-    prepaffy = {
-        run_module("prepaffy", COMMAND_ARGS, exit_immediately = TRUE)
+tryCatch(
+    {
+        switch(
+            COMMAND,
+            prepaffy = {
+                run_module("prepaffy", COMMAND_ARGS, exit_immediately = TRUE)
+            },
+            prepagil = {
+                run_module("prepagil", COMMAND_ARGS, exit_immediately = TRUE)
+            },
+            annotation = {
+                run_module("annotation", COMMAND_ARGS, exit_immediately = TRUE)
+            },
+            analize = {
+                run_module("analize", COMMAND_ARGS, exit_immediately = TRUE)
+            },
+            utils = {
+                run_module("utils", COMMAND_ARGS, exit_immediately = TRUE)
+            }
+        )
     },
-    prepagil = {
-        run_module("prepagil", COMMAND_ARGS, exit_immediately = TRUE)
+    error = function(cond) {
+        log$error(cond)
+        message(cond)
+        quit(status = 1, save = "no")
     },
-    annotation = {
-        run_module("annotation", COMMAND_ARGS, exit_immediately = TRUE)
-    },
-    analize = {
-        run_module("analize", COMMAND_ARGS, exit_immediately = TRUE)
-    },
-    utils = {
-        run_module("utils", COMMAND_ARGS, exit_immediately = TRUE)
+    warning = function(cond) {
+        log$warning(cond)
+        message(cond)
     }
 )

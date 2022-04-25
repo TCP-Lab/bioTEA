@@ -487,7 +487,7 @@ def run_biotea_box(
     log.info(container_logs)
     container.remove()
     if statuscode != 0:
-        container_error = "\n".join(container_logs.split("\n")[:-5])
+        container_error = "\n".join(container_logs.split("\n")[-5:])
         raise ContainerExitError(
             f"Container had a non-zero exit status: {statuscode}. Last five lines of container output: {container_error}"
         )

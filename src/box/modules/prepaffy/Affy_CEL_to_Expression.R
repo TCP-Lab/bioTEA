@@ -57,7 +57,6 @@ log$debug("Sourcing the 'Affy_CEL_to_Expression.R' file.")
 
 affy2expression <- function(
     input.folder, output.file, remove.controls = TRUE,
-    plot.width = 16, plot.height = 9, use.pdf = TRUE,
     n_plots = Inf
     ) {
   paste0(
@@ -65,15 +64,6 @@ affy2expression <- function(
     paste(input.folder, output.file, remove.controls, sep = " :: ")
   ) |>
     log$debug()
-
-  # Set options for printPlots
-  options(
-    "scriptName" = "prepaffy",
-    "save.PNG.plot" = !use.pdf,
-    "save.PDF.plot" = use.pdf,
-    "plot.width" = plot.width,
-    "plot.height" = plot.height
-  )
 
   # ---- Load .CEL files ----
   log$info("Looking for .CEL files...")
