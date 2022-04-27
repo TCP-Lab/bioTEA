@@ -77,7 +77,7 @@ source("/bioTEA/modules/analize/analysis_core.R")
 # Run the module
 # Set options for printPlots
 options(
-    scriptName = "analize",
+    scriptName = "analyze",
     save.PNG.plot = !fun_args$use_pdf,
     save.PDF.plot = fun_args$use_pdf,
     plot.width = fun_args$plot_width,

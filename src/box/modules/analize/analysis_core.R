@@ -442,7 +442,7 @@ make_overlaps_from_markings <- function(markings, toolname = "") {
           keep.order = TRUE
         ) |> print()
       },
-      paste("Upset Plot", toolname, sep = " - ")
+      paste("Intersection Plot", toolname, sep = " - ")
     )
 
   } else if (sum(markings) > 0) {

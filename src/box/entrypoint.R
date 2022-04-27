@@ -181,12 +181,10 @@ tryCatch(
         )
     },
     error = function(cond) {
-        log$error(cond)
-        message(cond)
+        log$debug("Got an error.")
+        traceback()
+        log$error(cond$message)
+        message(cond$message)
         quit(status = 1, save = "no")
-    },
-    warning = function(cond) {
-        log$warning(cond)
-        message(cond)
     }
 )
