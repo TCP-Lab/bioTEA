@@ -397,7 +397,7 @@ def run_biotea_box(
         assert not path.is_file(), f"Path {path} points to a file, not a folder."
 
         if not path.exists():
-            log.debug("Making anchor point: {path}")
+            log.debug(f"Making anchor point: {path}")
             os.makedirs(path)
 
     try:
@@ -484,7 +484,6 @@ def run_biotea_box(
     log.debug(f"Container exited with status {container.status} [{statuscode}]")
     log.debug(f"Removing container...")
     container_logs = container.logs().decode()
-    log.info(container_logs)
     container.remove()
     if statuscode != 0:
         container_error = "\n".join(container_logs.split("\n")[-5:])

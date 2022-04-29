@@ -12,7 +12,6 @@ from collections import deque
 from copy import copy
 from math import floor
 from pathlib import Path
-from pprint import pprint
 from shutil import get_terminal_size
 from typing import Callable, Optional, Union
 
@@ -410,8 +409,6 @@ def parse_biotea_box_options(path: Path) -> dict:
         extra_limma_vars = "NA"
 
     args.update({"batches": batches, "extra_limma_vars": extra_limma_vars})
-
-    pprint(args)
 
     return args
 

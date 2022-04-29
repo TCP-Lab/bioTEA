@@ -508,7 +508,8 @@ diagnose_limma_data <- function(
             "blue" = DEGs.limma[[i]]$markings == -1
           ),
           xrange = c(min.A.value, max.A.value),
-          yrange = c(NA, max.M.value)
+          yrange = c(NA, max.M.value),
+          title = paste0("MA plot with Limma DEGs: ", names(DEGs.limma)[i])
         ) |> print()
       },
       paste("MA-Plot with Limma DEGs ", names(DEGs.limma)[i], sep = "")
@@ -876,7 +877,8 @@ diagnose_rankprod_data <- function(
             "blue" = DEGs.rankprod[[i]]$markings == -1
           ),
           xrange = c(min.A.value, max.A.value),
-          yrange = c(NA, max.M.value)
+          yrange = c(NA, max.M.value),
+          title = paste0("MA plot with RP DEGs: ", names(DEGs.rankprod)[i])
         ) |> print()
       },
       paste("MA-Plot with RankProd DEGs ", names(DEGs.rankprod)[i], sep = "")
