@@ -115,7 +115,7 @@ def retrieve_geo_data(
 
 
 def info_containers():
-    """Get information on the downloaded and available GATTACA containers."""
+    """Get information on the downloaded and available BioTeaBox containers."""
     log.info("Getting container info...")
     local_versions = get_installed_versions()
     remote_versions = get_all_versions()
@@ -163,7 +163,7 @@ def update_tool(yes: bool = False):
 
     if not yes:
         do_update = typer.confirm(
-            f"A new GATTACA version was found ({latest}). Update?",
+            f"A new BioTeaBox version was found ({latest}). Update?",
         )
     else:
         log.debug("Skipped confirmation prompt")
@@ -183,7 +183,7 @@ def retrieve(
 ):
     """Retrieve data from GEO regarding a GEO series.
 
-    Also helps setting the options for the GATTACA analysis by providing a metadata file.
+    Also helps setting the options for the BioTeaBox analysis by providing a metadata file.
     """
     try:
         geo_series = retrieve_geo_data(output_folder=output_path, geo_id=geo_id)
@@ -227,7 +227,7 @@ def prepare_agilent(
         return
 
     if not version in ["bleeding"] and version not in get_all_versions():
-        log.error(f"Invalid GATTACA version {version}")
+        log.error(f"Invalid BioTeaBox version {version}")
         return
 
     if version not in get_installed_versions():
@@ -287,7 +287,7 @@ def prepare_affymetrix(
         return
 
     if not version in ["bleeding"] and version not in get_all_versions():
-        log.error(f"Invalid GATTACA version {version}")
+        log.error(f"Invalid BioTeaBox version {version}")
         return
 
     if version not in get_installed_versions():
@@ -329,7 +329,7 @@ def run_biotea_box_analysis(
     log_name: Optional[str] = None,
     verbose: bool = False,
 ):
-    """Run Differential Gene Expression with GATTACA."""
+    """Run Differential Gene Expression with BioTeaBox."""
     print(TEA_LOGO)
     log.info(f"Biotea version {__version__}")
 
@@ -341,7 +341,7 @@ def run_biotea_box_analysis(
         version = get_latest_version()
 
     if not version in ["bleeding"] and version not in get_all_versions():
-        log.error(f"Invalid GATTACA version {version}")
+        log.error(f"Invalid BioTeaBox version {version}")
         return
 
     if version not in get_installed_versions():

@@ -6,6 +6,7 @@ import os
 from abc import ABC
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from numbers import Number
 from pathlib import Path
 from typing import Any, Callable
@@ -24,7 +25,7 @@ from bioTea.utils.tools import ConsoleWindow
 log = logging.getLogger(__name__)
 
 COMPATIBLE_VERSIONS = ["bleeding"]
-"""Compatible GATTACA versions that can be ran by bioTEA"""
+"""Compatible BioTeaBox versions that can be ran by bioTEA"""
 
 REPO = "cmalabscience/biotea-box"
 
@@ -32,27 +33,27 @@ POSSIBLE_LOG_LEVELS = ("info", "debug", "error", "warning", "disable")
 
 
 @dataclass
-class GattacaVersion:
+class BioTeaBoxVersion:
     raw_version: str
 
     @property
     def realversion(self):
         return parse(self.raw_version)
 
-    def __lt__(self, other: GattacaVersion) -> bool:
+    def __lt__(self, other: BioTeaBoxVersion) -> bool:
         if type(other) is str:
-            other = GattacaVersion(other)
+            other = BioTeaBoxVersion(other)
 
-        if type(other) is not GattacaVersion:
-            raise TypeError(f"Cannot compare 'GattacaVersion' and '{type(other)}'")
+        if type(other) is not BioTeaBoxVersion:
+            raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
         return self.realversion < other.realversion
 
     def __eq__(self, other: object) -> bool:
         if type(other) is str:
-            other = GattacaVersion(other)
+            other = BioTeaBoxVersion(other)
 
-        if type(other) is not GattacaVersion:
-            raise TypeError(f"Cannot compare 'GattacaVersion' and '{type(other)}'")
+        if type(other) is not BioTeaBoxVersion:
+            raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
         return self.realversion == other.realversion
 
     def __str__(self) -> str:
@@ -61,16 +62,16 @@ class GattacaVersion:
 
 def get_installed_versions(
     client: docker.DockerClient = docker.from_env(),
-) -> list[GattacaVersion]:
+) -> list[BioTeaBoxVersion]:
     local_images = client.images.list(REPO)
     local_images = [
         local_image.tags[0][(len(REPO) + 1) :] for local_image in local_images
     ]
-    return [GattacaVersion(version) for version in local_images]
+    return [BioTeaBoxVersion(version) for version in local_images]
 
 
 def pull_biotea_box_version(
-    version: GattacaVersion, client: docker.DockerClient = docker.from_env()
+    version: BioTeaBoxVersion, client: docker.DockerClient = docker.from_env()
 ):
     log.debug(f"Looking to see if {version} is available...")
     if not version in get_all_versions():
@@ -83,7 +84,7 @@ def pull_biotea_box_version(
 
 
 def delete_biotea_box_version(
-    version: GattacaVersion, client: docker.DockerClient = docker.from_env()
+    version: BioTeaBoxVersion, client: docker.DockerClient = docker.from_env()
 ):
     if not version in get_installed_versions():
         log.error(f"Version {version} not found locally.")
@@ -96,7 +97,7 @@ def delete_biotea_box_version(
     return True
 
 
-def get_all_versions() -> list[GattacaVersion]:
+def get_all_versions() -> list[BioTeaBoxVersion]:
     endpoint = f"https://registry.hub.docker.com/v1/repositories/{REPO}/tags"
     res = requests.get(endpoint, timeout=20)
 
@@ -104,7 +105,7 @@ def get_all_versions() -> list[GattacaVersion]:
 
     versions = []
     for image in images:
-        version = GattacaVersion(image["name"])
+        version = BioTeaBoxVersion(image["name"])
         if type(version.realversion) is LegacyVersion:
             log.debug(f"Version '{version}' discarded as it is a Legacy version.")
             continue
@@ -116,7 +117,7 @@ def get_all_versions() -> list[GattacaVersion]:
     return versions
 
 
-def get_latest_version() -> GattacaVersion:
+def get_latest_version() -> BioTeaBoxVersion:
     all_vers = get_all_versions()
     if all_vers:
         return sorted(all_vers)[-1]
@@ -177,8 +178,8 @@ def _or_(x: Callable, y: Callable):
     return _wrapped
 
 
-class GattacaArgument:
-    """Class used to mark an argument in a GattacaInterface dict."""
+class BioTeaBoxArgument:
+    """Class used to mark an argument in a BioTeaBoxInterface dict."""
 
     def __init__(self, check: Callable, default: Any) -> None:
         self.check = check
@@ -186,7 +187,7 @@ class GattacaArgument:
 
         assert self.check(
             default
-        ), "Invalid default GATTACA value. Someone coded it wrong."
+        ), "Invalid default BioTeaBox value. Someone coded it wrong."
 
     def __call__(self, argument=None):
         if argument == None:
@@ -196,7 +197,7 @@ class GattacaArgument:
             raise ValueError(f"Argument check failed. Invalid argument {argument}")
 
 
-class RequiredGattacaArgument(GattacaArgument):
+class RequiredBioTeaBoxArgument(BioTeaBoxArgument):
     def __init__(self, check: Callable) -> None:
         self.check = check
         # The default does not matter. It HAS to be overridden.
@@ -207,10 +208,10 @@ class RequiredGattacaArgument(GattacaArgument):
             raise ValueError(f"Argument check failed. Invalid argument {argument}")
 
 
-class GattacaInterface(ABC):
-    """Abstract class that models an interface with GATTACA.
+class BioTeaBoxInterface(ABC):
+    """Abstract class that models an interface with BioTeaBox.
 
-    Defines the arguments that can be passed to a GATTACA command, and handles
+    Defines the arguments that can be passed to a BioTeaBox command, and handles
     parsing them to an object that can be given to `run_biotea_box` to run the
     concrete command.
     """
@@ -218,8 +219,8 @@ class GattacaInterface(ABC):
     possible_args: dict = None
     """The possible arguments to the interface.
 
-    This is a dictionary of "value_name" = GattacaArgument.
-    If a Callable, it is used to test the arg before passing it to GATTACA.
+    This is a dictionary of "value_name" = BioTeaBoxArgument.
+    If a Callable, it is used to test the arg before passing it to BioTeaBox.
     If a RequiredArgument,
     """
 
@@ -232,11 +233,11 @@ class GattacaInterface(ABC):
 
     @classmethod
     def parse_arguments(self, **kwargs) -> str:
-        """Check the input args and parse them to a GATTACA-compliant string."""
+        """Check the input args and parse them to a BioTeaBox-compliant string."""
         required_args = [
             key
             for key, val in self.possible_args.items()
-            if type(val) is RequiredGattacaArgument
+            if type(val) is RequiredBioTeaBoxArgument
         ]
 
         assert all(
@@ -269,65 +270,65 @@ class GattacaInterface(ABC):
         }
         defaults.update(kwargs)
 
-        # GATTACA wants a JSON-encoded string.
+        # BioTeaBox wants a JSON-encoded string.
         return f"'{json.dumps(defaults, indent=None)}'"
 
 
 ## >> Interface definitions
 # To define a new interface, or check that one is compilant, look in the
-# `entrypoint.R` of the GATTACA module, at the `defaults` list.
+# `entrypoint.R` of the BioTeaBox module, at the `defaults` list.
 # Convert this list to a dictionary, replacing every `NULL` with RequiredArgument
 
 
-class PrepAffyInterface(GattacaInterface):
+class PrepAffyInterface(BioTeaBoxInterface):
     possible_args: dict = {
-        "output.file": RequiredGattacaArgument(is_path_exists_or_creatable_portable),
-        "remove.controls": GattacaArgument(is_(bool), True),
-        "n_plots": GattacaArgument(is_(int), 1_000_000),
+        "output.file": RequiredBioTeaBoxArgument(is_path_exists_or_creatable_portable),
+        "remove.controls": BioTeaBoxArgument(is_(bool), True),
+        "n_plots": BioTeaBoxArgument(is_(int), 1_000_000),
         # Plot options
-        "use_pdf": GattacaArgument(is_(bool), True),
-        "plot_width": GattacaArgument(is_(int), 16),
-        "plot_height": GattacaArgument(is_(int), 9),
-        "png_ppi": GattacaArgument(is_(int), 250),
-        "enumerate_plots": GattacaArgument(is_(bool), True),
+        "use_pdf": BioTeaBoxArgument(is_(bool), True),
+        "plot_width": BioTeaBoxArgument(is_(int), 16),
+        "plot_height": BioTeaBoxArgument(is_(int), 9),
+        "png_ppi": BioTeaBoxArgument(is_(int), 250),
+        "enumerate_plots": BioTeaBoxArgument(is_(bool), True),
     }
 
 
-class PrepAgilInterface(GattacaInterface):
+class PrepAgilInterface(BioTeaBoxInterface):
     possible_args: dict = {
-        "output_file": RequiredGattacaArgument(is_path_exists_or_creatable_portable),
-        "remove_controls": GattacaArgument(is_(bool), True),
-        "n_plots": GattacaArgument(is_(int), 1_000_000),
-        "grep_pattern": GattacaArgument(is_(str), "*.(txt|TXT)"),
+        "output_file": RequiredBioTeaBoxArgument(is_path_exists_or_creatable_portable),
+        "remove_controls": BioTeaBoxArgument(is_(bool), True),
+        "n_plots": BioTeaBoxArgument(is_(int), 1_000_000),
+        "grep_pattern": BioTeaBoxArgument(is_(str), "*.(txt|TXT)"),
         # Plot options
-        "use_pdf": GattacaArgument(is_(bool), True),
-        "plot_width": GattacaArgument(is_(int), 16),
-        "plot_height": GattacaArgument(is_(int), 9),
-        "png_ppi": GattacaArgument(is_(int), 250),
-        "enumerate_plots": GattacaArgument(is_(bool), True),
+        "use_pdf": BioTeaBoxArgument(is_(bool), True),
+        "plot_width": BioTeaBoxArgument(is_(int), 16),
+        "plot_height": BioTeaBoxArgument(is_(int), 9),
+        "png_ppi": BioTeaBoxArgument(is_(int), 250),
+        "enumerate_plots": BioTeaBoxArgument(is_(bool), True),
     }
 
 
-class AnalyzeInterface(GattacaInterface):
+class AnalyzeInterface(BioTeaBoxInterface):
     possible_args: dict = {
-        "input.file": RequiredGattacaArgument(is_path_exists_or_creatable_portable),
-        "experimental_design": RequiredGattacaArgument(is_valid_design_string),
-        "contrasts": RequiredGattacaArgument(is_list_of(is_(str))),
-        "min_log2_expression": GattacaArgument(is_(Number), 4.0),
-        "fc_threshold": GattacaArgument(is_(Number), 0.5),
-        "min_groupwise_presence": GattacaArgument(is_(Number), 0.8),
-        "show_data_snippets": GattacaArgument(is_(bool), True),
-        "annotation_database": GattacaArgument(is_(bool), True),
-        "dryrun": GattacaArgument(is_(bool), False),
-        "renormalize": GattacaArgument(is_(bool), False),
-        "convert_counts": GattacaArgument(is_(bool), False),
-        "run_limma_analysis": GattacaArgument(is_(bool), True),
-        "run_rankprod_analysis": GattacaArgument(is_(bool), True),
-        "batches": GattacaArgument(na_or(is_list_of(is_valid_design_string)), "NA"),
-        "extra_limma_vars": GattacaArgument(
+        "input.file": RequiredBioTeaBoxArgument(is_path_exists_or_creatable_portable),
+        "experimental_design": RequiredBioTeaBoxArgument(is_valid_design_string),
+        "contrasts": RequiredBioTeaBoxArgument(is_list_of(is_(str))),
+        "min_log2_expression": BioTeaBoxArgument(is_(Number), 4.0),
+        "fc_threshold": BioTeaBoxArgument(is_(Number), 0.5),
+        "min_groupwise_presence": BioTeaBoxArgument(is_(Number), 0.8),
+        "show_data_snippets": BioTeaBoxArgument(is_(bool), True),
+        "annotation_database": BioTeaBoxArgument(is_(bool), True),
+        "dryrun": BioTeaBoxArgument(is_(bool), False),
+        "renormalize": BioTeaBoxArgument(is_(bool), False),
+        "convert_counts": BioTeaBoxArgument(is_(bool), False),
+        "run_limma_analysis": BioTeaBoxArgument(is_(bool), True),
+        "run_rankprod_analysis": BioTeaBoxArgument(is_(bool), True),
+        "batches": BioTeaBoxArgument(na_or(is_list_of(is_valid_design_string)), "NA"),
+        "extra_limma_vars": BioTeaBoxArgument(
             na_or(is_list_of(is_valid_design_string)), "NA"
         ),
-        "group_colors": GattacaArgument(
+        "group_colors": BioTeaBoxArgument(
             is_list_of(is_valid_color),
             [
                 "cornflowerblue",
@@ -339,21 +340,21 @@ class AnalyzeInterface(GattacaInterface):
             ],
         ),
         # Plot options
-        "use_pdf": GattacaArgument(is_(bool), True),
-        "plot_width": GattacaArgument(is_(int), 16),
-        "plot_height": GattacaArgument(is_(int), 9),
-        "png_ppi": GattacaArgument(is_(int), 250),
-        "enumerate_plots": GattacaArgument(is_(bool), True),
+        "use_pdf": BioTeaBoxArgument(is_(bool), True),
+        "plot_width": BioTeaBoxArgument(is_(int), 16),
+        "plot_height": BioTeaBoxArgument(is_(int), 9),
+        "png_ppi": BioTeaBoxArgument(is_(int), 250),
+        "enumerate_plots": BioTeaBoxArgument(is_(bool), True),
     }
 
 
-class AnnotateInterface(GattacaInterface):
+class AnnotateInterface(BioTeaBoxInterface):
     possible_args: dict = {
-        "expression_data_path": RequiredGattacaArgument(
+        "expression_data_path": RequiredBioTeaBoxArgument(
             is_path_exists_or_creatable_portable
         ),
-        "output_path": RequiredGattacaArgument(is_path_exists_or_creatable_portable),
-        "database_name": GattacaArgument(_or_(is_(str), is_(bool)), "internal"),
+        "output_path": RequiredBioTeaBoxArgument(is_path_exists_or_creatable_portable),
+        "database_name": BioTeaBoxArgument(_or_(is_(str), is_(bool)), "internal"),
     }
 
 
@@ -363,7 +364,7 @@ class AnnotateInterface(GattacaInterface):
 def run_biotea_box(
     command: str,
     arguments: dict[str],
-    interface: GattacaInterface,
+    interface: BioTeaBoxInterface,
     input_anchor: Path,
     output_anchor: Path,
     log_anchor: Path,
@@ -462,7 +463,7 @@ def run_biotea_box(
         raise e
 
     try:
-        with ConsoleWindow(10, name="GATTACA container", line_prefix="> ") as window:
+        with ConsoleWindow(10, name="BioTeaBox container", line_prefix="> ") as window:
             for line in container.logs(stream=True):
                 window.print(line.decode().rstrip())
     except KeyboardInterrupt:
@@ -490,5 +491,44 @@ def run_biotea_box(
         raise ContainerExitError(
             f"Container had a non-zero exit status: {statuscode}. Last five lines of container output: {container_error}"
         )
+
+    return 0
+
+
+class SpecialCommand(Enum):
+    versions = "versions"
+    test = "test"
+
+
+def run_special_biotea_command(command: SpecialCommand, version: BioTeaBoxVersion):
+    """Runs a special bioTEA box command that does not require args."""
+    client = docker.from_env()
+
+    if version == "latest":
+        version = get_latest_version()
+        log.info(f"Latest version: {version}")
+
+    if version not in get_installed_versions(client=client):
+        pull_biotea_box_version(version, client=client)
+
+    if version not in COMPATIBLE_VERSIONS:
+        log.warn(
+            f"Selected an incompatible version '{version}'. BioTEA might not work."
+        )
+        typer.confirm("Continue anyway?", abort=True)
+
+    try:
+        image = client.images.get(f"{REPO}:{version}")
+    except docker.errors.ImageNotFound:
+        log.error(f"Cannot find local image: {version}")
+        return 0
+
+    log.info(f"Running special command '{command.value}' in version '{version}'.")
+
+    composed_command = str(os.getuid()) + " " + str(os.getgid()) + " " + command.value
+
+    bin_logs = client.containers.run(image, command=composed_command, stderr=True)
+
+    print(bin_logs.decode("UTF-8"))
 
     return 0

@@ -14,6 +14,12 @@ args <- commandArgs(trailingOnly = TRUE)
     restorer <- function(...) {
         registered <- getOption("OWNERSHIP_REGISTER", default = c())
 
+        # This can fail twice, hence the double call.
+        if (length(registered) == 0) {
+            cat("No files to restore permissions to.")
+            return()
+        }
+
         registered <- registered[file.exists(registered)]
 
         if (length(registered) == 0) {
@@ -83,6 +89,12 @@ if (COMMAND == "test") {
     }
 
     cat("Done executing tests.\n")
+    quit(save = "no", status = 0)
+} else if (COMMAND == "versions") {
+    # Spit out the versions
+    vers <- as.data.frame(installed.packages())[, 'Version', drop = FALSE]
+    cat("R package versions:\n")
+    print(vers)
     quit(save = "no", status = 0)
 }
 

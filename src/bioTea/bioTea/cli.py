@@ -10,6 +10,7 @@ import yaml
 
 import bioTea.pour as pour
 from bioTea import resources
+from bioTea.docker_wrapper import SpecialCommand, run_special_biotea_command
 from bioTea.utils.strings import TEA_LOGO
 from bioTea.utils.tools import make_path_valid
 from bioTea.wizard import interactive_metadata_to_biotea_box_options, wizard
@@ -27,7 +28,7 @@ log = logging.getLogger(__name__)
 #   - prepare
 #       - affymetrix: Prep affymetrix data for analysis
 #       - agilent: Prep agilent data for analysis
-#   - analyze: Analyze with GATTACA an expression file
+#   - analyze: Analyze with BioTEA box an expression file
 #   - annotate: Annotate an expression matrix
 #       - generate: Generate annotations for some organism.
 
@@ -58,7 +59,7 @@ def generic_info(ctx: typer.Context):
 
 @info.command(name="containers")
 def info_containers_command():
-    """Get information on the downloaded and available GATTACA containers."""
+    """Get information on the downloaded and available BioTEA box containers."""
     pour.info_containers()
 
 
@@ -66,6 +67,16 @@ def info_containers_command():
 def info_biotea_command():
     """Get information on the version of bioTEA."""
     pour.info_biotea()
+
+
+@info.command(name="versions")
+def info_biotea_command(
+    version: str = typer.Argument(
+        ..., help="Version of the bioTEA box to get versions from."
+    )
+):
+    """Get the R package versions used inside the bioTEA container"""
+    run_special_biotea_command(SpecialCommand.versions, version=version)
 
 
 @cli_root.command(name="update")
@@ -85,7 +96,7 @@ def update_tool_command(
 def run_wizard_command():
     """Run the bioTEA wizard.
 
-    The wizard helps in setting up, running, and exploring a GATTACA analysis.
+    The wizard helps in setting up, running, and exploring a BioTEA box analysis.
     """
     wizard()
 
@@ -101,7 +112,7 @@ def retrieve_command(
 ):
     """Retrieve data from GEO regarding a GEO series.
 
-    Also helps setting the options for the GATTACA analysis by providing a metadata file.
+    Also helps setting the options for the BioTEA box analysis by providing a metadata file.
     """
     pour.retrieve(output_path=output_path, geo_id=geo_id)
 
@@ -115,9 +126,9 @@ def prepare_agilent_command(
     grep_pattern: str = typer.Argument(
         "\.txt$", help="Pattern with which to find the files"
     ),
-    version: str = typer.Option("latest", help="Specify GATTACA container version"),
+    version: str = typer.Option("latest", help="Specify BioTEA box container version"),
     log_name: Optional[str] = typer.Option(
-        None, help="Specify GATTACA log name for the run"
+        None, help="Specify BioTEA box log name for the run"
     ),
     remove_controls: bool = typer.Option(False, help="Remove control probes?"),
     plot_number: Optional[int] = typer.Option(
@@ -127,7 +138,7 @@ def prepare_agilent_command(
     use_png: bool = typer.Option(
         False, help="Generate .png files instead of pdf files (600 ppi resolution)."
     ),
-    verbose: bool = typer.Option(False, help="Increase verbosity of GATTACA logs"),
+    verbose: bool = typer.Option(False, help="Increase verbosity of BioTEA box logs"),
 ):
     """Prepare agilent expression data for analysis."""
     pour.prepare_agilent(
@@ -150,9 +161,9 @@ def prepare_affymetrix_command(
         ..., help="Path to the folder with the input files"
     ),
     output_file: Path = typer.Argument(..., help="Path to the output file"),
-    version: str = typer.Option("latest", help="Specify GATTACA container version"),
+    version: str = typer.Option("latest", help="Specify BioTEA box container version"),
     log_name: Optional[str] = typer.Option(
-        None, help="Specify GATTACA log name for the run"
+        None, help="Specify BioTEA box log name for the run"
     ),
     remove_controls: bool = typer.Option(False, help="Remove control probes?"),
     plot_number: int = typer.Option(1e10, help="Maximum number of plots to show"),
@@ -160,7 +171,7 @@ def prepare_affymetrix_command(
     use_png: bool = typer.Option(
         False, help="Generate .png files instead of pdf files (600 ppi resolution)."
     ),
-    verbose: bool = typer.Option(False, help="Increase verbosity of GATTACA logs"),
+    verbose: bool = typer.Option(False, help="Increase verbosity of BioTEA box logs"),
 ):
     """Prepare affymetrix expression data for analysis."""
     pour.prepare_affymetrix(
@@ -181,13 +192,13 @@ def run_biotea_box_analysis_command(
     options_path: Path = typer.Argument(..., help="Path to the options file"),
     output_dir: Path = typer.Argument(..., help="Path to the output directory"),
     input_file: Path = typer.Argument(..., help="Path to the input expression matrix"),
-    version: str = typer.Option("latest", help="Specify GATTACA container version"),
+    version: str = typer.Option("latest", help="Specify BioTEA box container version"),
     log_name: Optional[str] = typer.Option(
-        None, help="Specify GATTACA log name for the run"
+        None, help="Specify BioTEA box log name for the run"
     ),
-    verbose: bool = typer.Option(False, help="Increase verbosity of GATTACA logs"),
+    verbose: bool = typer.Option(False, help="Increase verbosity of BioTEA box logs"),
 ):
-    """Run Differential Gene Expression with GATTACA."""
+    """Run Differential Gene Expression with BioTEA box."""
     pour.run_biotea_box_analysis(
         options_path=options_path,
         output_dir=output_dir,
@@ -248,11 +259,11 @@ def annotate_file_command(
         "internal",
         help="Annotation database to use. Pass 'internal' to use the default human database. Otherwise, a path to the database file generated with `annotations generate`",
     ),
-    version: str = typer.Option("latest", help="Specify GATTACA container version"),
+    version: str = typer.Option("latest", help="Specify BioTEA box container version"),
     log_name: Optional[str] = typer.Option(
-        None, help="Specify GATTACA log name for the run"
+        None, help="Specify BioTEA box log name for the run"
     ),
-    verbose: bool = typer.Option(False, help="Increase verbosity of GATTACA logs."),
+    verbose: bool = typer.Option(False, help="Increase verbosity of BioTEA box logs."),
 ):
     """Annotate some expression data or DEA output with annotation data."""
     pour.annotate_file(
@@ -273,7 +284,7 @@ def generate_annotations_command(
     organism: ValidSpecies = typer.Argument(
         ValidSpecies.human, help="Species to generate annotations for"
     ),
-    verbose: bool = typer.Option(False, help="Increase verbosity of GATTACA logs."),
+    verbose: bool = typer.Option(False, help="Increase verbosity of BioTEA box logs."),
 ):
-    """Generate annotations to use with GATTACA."""
+    """Generate annotations to use with BioTEA box."""
     print("You got to a hidden command! This has not been implemented yet.")
