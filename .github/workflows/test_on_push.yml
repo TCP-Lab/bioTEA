@@ -24,15 +24,9 @@ jobs:
           pip install -r requirements-dev.txt
           pip install -e .
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
       - name: Build a new bleeding container
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          tags: cmalabscience/biotea-box:bleeding
-          context: ./src
+        working-directory: ./src
+        run: docker build -t cmalabscience/biotea-box:bleeding .
 
       - name: Test with pytest
         working-directory: ./src/bioTea
