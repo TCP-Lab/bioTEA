@@ -451,8 +451,14 @@ class Replacer:
 def ask_choices(
     prompt: str, choices: list, accept_list: bool = False
 ) -> Union[str, list[str]]:
+    if "" in choices:
+        clear_choices = [x for x in choices if x != ""]
+        composed_prompt = f"{prompt} " + ", ".join(clear_choices) + "or leave empty: "
+    else:
+        composed_prompt = f"{prompt} " + ", ".join(choices) + ": "
+
     while True:
-        user = input(f"{prompt} " + ", ".join(choices) + ": ")
+        user = input(composed_prompt)
         if accept_list:
             user = [x.strip() for x in user.split(",")]
             if not all([x in choices for x in user]):

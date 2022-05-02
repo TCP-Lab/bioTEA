@@ -189,6 +189,10 @@ tryCatch(
             },
             utils = {
                 run_module("utils", COMMAND_ARGS, exit_immediately = TRUE)
+            },
+            {
+                msg <- paste0("Unrecognized command '", COMMAND, "'.")
+                stop(msg)
             }
         )
     },

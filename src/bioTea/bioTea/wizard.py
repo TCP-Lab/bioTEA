@@ -57,7 +57,7 @@ def glob_manufacturer(manufacturer_string) -> ValidManufacturers:
 def sanitize_design_string(values: list) -> list[str]:
     # Character-only
     def contains_illegal(x):
-        return any([y in ", -" for y in x])
+        return any([y in ", -" for y in str(x)])
 
     if any(
         [contains_numbers(x) for x in values] + [contains_illegal(x) for x in values]
@@ -69,9 +69,7 @@ def sanitize_design_string(values: list) -> list[str]:
         sanitized_values = replacer.sanitize(values)
         log.info(
             "Replaced values: {}".format(
-                ", ".join(
-                    [f"{old} > {new}" for old, new in zip(values, sanitized_values)]
-                )
+                ", ".join([f"{old} > {new}" for old, new in replacer.matches.items()])
             )
         )
         return sanitized_values
@@ -87,7 +85,7 @@ def standardize_pairings(values: list) -> list[str]:
 
     log.info(
         "New pairings: {}".format(
-            ", ".join([f"{old} > {new}" for old, new in zip(values, sanitized_values)])
+            ", ".join([f"{old} > {new}" for old, new in replacer.matches.items()])
         )
     )
     return sanitized_values
@@ -216,7 +214,7 @@ def interactive_metadata_to_biotea_box_options(
     else:
         typer.echo("\tNo batches to correct for.")
     if other_vars:
-        typer.echo(f"\tOther variables to correct for: {''.join(other_vars)}")
+        typer.echo(f"\tOther variables to correct for: {', '.join(other_vars)}")
     else:
         typer.echo(f"\tNo other variables to take into account.")
 
@@ -236,9 +234,9 @@ def interactive_metadata_to_biotea_box_options(
     else:
         new_batches_design = None
     if other_vars:
-        new_extra_vars = [
-            ", ".join(sanitize_design_string(metadata[var])) for var in other_vars
-        ]
+        new_extra_vars = {
+            var: ", ".join(sanitize_design_string(metadata[var])) for var in other_vars
+        }
     else:
         new_extra_vars = None
 
@@ -262,7 +260,7 @@ def interactive_general_options():
     if not annotation_database:
         log.info(
             Fore.GREEN
-            + "If you need to use a different annotation database, consider unsing `biotea annotations` instead, or edit the analysis file manually."
+            + "If you need to use a different annotation database, consider using `biotea annotations` instead, or edit the analysis file manually."
             + Fore.RESET
         )
 
