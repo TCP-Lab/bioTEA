@@ -1,5 +1,13 @@
+import os
 import subprocess
 from pathlib import Path
+
+import pytest
+
+FIXTURE_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "test_files",
+)
 
 
 def test_biotea_installed():
@@ -23,7 +31,11 @@ def contains_output(dir):
 
 
 # Some terrible integration tests, just so we have *some* testing capabilities.
-def test_generic_run(tmpdir):
+@pytest.mark.datafiles(
+    os.path.join(FIXTURE_DIR, "Fake_options_files/fake_expression_run.yaml"),
+    os.path.join(FIXTURE_DIR, "fake_expression_matrix.csv"),
+)
+def test_generic_run(tmpdir, datafiles):
     res = subprocess.run(
         [
             "biotea",
@@ -32,9 +44,9 @@ def test_generic_run(tmpdir):
             "biotea_log",
             "--version",
             "bleeding",
-            "~/Files/Data/FakeData/Fake_options_files/fake_expression_run.yaml",
+            os.path.join(datafiles, "fake_expression_run.yaml"),
             tmpdir,
-            "~/Files/Data/FakeData/fake_expression_matrix.csv",
+            os.path.join(datafiles, "fake_expression_matrix.csv"),
         ],
         capture_output=True,
     )
@@ -43,7 +55,11 @@ def test_generic_run(tmpdir):
     assert contains_logs(tmpdir)
 
 
-def test_generic_run_with_plots(tmpdir):
+@pytest.mark.datafiles(
+    os.path.join(FIXTURE_DIR, "Fake_options_files/fake_expression_run_wet.yaml"),
+    os.path.join(FIXTURE_DIR, "fake_expression_matrix.csv"),
+)
+def test_generic_run_with_plots(tmpdir, datafiles):
     res = subprocess.run(
         [
             "biotea",
@@ -52,9 +68,9 @@ def test_generic_run_with_plots(tmpdir):
             "bleeding",
             "--log-name",
             "biotea_log",
-            "~/Files/Data/FakeData/Fake_options_files//fake_expression_run_wet.yaml",
+            os.path.join(datafiles, "fake_expression_run_wet.yaml"),
             tmpdir,
-            "~/Files/Data/FakeData/fake_expression_matrix.csv",
+            os.path.join(datafiles, "fake_expression_matrix.csv"),
         ],
         capture_output=True,
     )
@@ -62,14 +78,20 @@ def test_generic_run_with_plots(tmpdir):
     # Test the presence of the logs and plots and outputs
     assert contains_logs(tmpdir)
     assert contains_output(tmpdir)
-    assert (Path(tmpdir) / "analize Figures").exists()
+    assert (Path(tmpdir) / "analyze Figures").exists()
     # Did (at least one) plot get saved?
-    assert len(list((Path(tmpdir) / "analize Figures").iterdir())) > 0
+    assert len(list((Path(tmpdir) / "analyze Figures").iterdir())) > 0
     # Test that the correspondence table got saved
     assert (Path(tmpdir) / "correspondence_table.csv").exists()
 
 
-def test_generic_run_with_annotations(tmpdir):
+@pytest.mark.datafiles(
+    os.path.join(
+        FIXTURE_DIR, "Fake_options_files/fake_expression_run_with_annots.yaml"
+    ),
+    os.path.join(FIXTURE_DIR, "fake_expression_matrix_annotatable.csv"),
+)
+def test_generic_run_with_annotations(tmpdir, datafiles):
     res = subprocess.run(
         [
             "biotea",
@@ -78,9 +100,9 @@ def test_generic_run_with_annotations(tmpdir):
             "bleeding",
             "--log-name",
             "biotea_log",
-            "~/Files/Data/FakeData/Fake_options_files/fake_expression_run_with_annots.yaml",
+            os.path.join(datafiles, "fake_expression_run_with_annots.yaml"),
             tmpdir,
-            "~/Files/Data/FakeData/fake_expression_matrix_annotatable.csv",
+            os.path.join(datafiles, "fake_expression_matrix_annotatable.csv"),
         ],
         capture_output=True,
     )
@@ -88,14 +110,18 @@ def test_generic_run_with_annotations(tmpdir):
     # Test the output files actually have the annotation columns
     assert contains_logs(tmpdir)
     assert contains_output(tmpdir)
-    assert (Path(tmpdir) / "analize Figures").exists()
+    assert (Path(tmpdir) / "analyze Figures").exists()
     with (Path(tmpdir) / "Limma - DEG Table treated-control.csv").open("r") as testfile:
         header = testfile.readline()
     # The double quotes is due to csv encoding.
     assert '"SYMBOL"' in header.split(",")
 
 
-def test_generic_counts_run(tmpdir):
+@pytest.mark.datafiles(
+    os.path.join(FIXTURE_DIR, "Fake_options_files/fake_counts_run.yaml"),
+    os.path.join(FIXTURE_DIR, "fake_count_matrix.csv"),
+)
+def test_generic_counts_run(tmpdir, datafiles):
     res = subprocess.run(
         [
             "biotea",
@@ -104,9 +130,9 @@ def test_generic_counts_run(tmpdir):
             "bleeding",
             "--log-name",
             "biotea_log",
-            "~/Files/Data/FakeData/Fake_options_files/fake_counts_run.yaml",
+            os.path.join(datafiles, "fake_counts_run.yaml"),
             tmpdir,
-            "~/Files/Data/FakeData/fake_count_matrix.csv",
+            os.path.join(datafiles, "fake_count_matrix.csv"),
         ],
         capture_output=True,
     )
@@ -115,16 +141,20 @@ def test_generic_counts_run(tmpdir):
     assert contains_logs(tmpdir)
 
 
-def test_generic_unsorted_cols(tmpdir):
+@pytest.mark.datafiles(
+    os.path.join(FIXTURE_DIR, "Fake_options_files/fake_counts_run.yaml"),
+    os.path.join(FIXTURE_DIR, "fake_count_matrix_unsorted.csv"),
+)
+def test_generic_unsorted_cols(tmpdir, datafiles):
     res = subprocess.run(
         [
             "biotea",
             "analyze",
             "--version",
             "bleeding",
-            "~/Files/Data/FakeData/Fake_options_files/fake_counts_run.yaml",
+            os.path.join(datafiles, "fake_counts_run.yaml"),
             tmpdir,
-            "~/Files/Data/FakeData/fake_count_matrix_unsorted.csv",
+            os.path.join(datafiles, "fake_count_matrix_unsorted.csv"),
         ],
         capture_output=True,
     )

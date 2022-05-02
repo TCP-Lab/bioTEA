@@ -48,7 +48,7 @@ dp_select <- dplyr::select
 #' The produced plots are an hierarchical cluster and a PCA plot.
 #'
 #' @param expression_set The expression set to evaluate
-#' @param groups The groups associaged with the data (for plotting)
+#' @param groups The groups associated with the data (for plotting)
 #' @param group_colors The colours associated with the groups of the data
 #'
 #' @author Hedmad
@@ -124,7 +124,7 @@ diagnose_batch_effects <- function(
 #' @param groups A vector with the group names that correspond to the columns
 #'   in the `expression_set`.
 #' @param min_groupwise_presence The minimum groupwise presence used to filter.
-#' @param expression_threshold The log2 expression treshold to use to consider
+#' @param expression_threshold The log2 expression threshold to use to consider
 #'   a gene to be sufficiently expressed in a sample.
 #'
 #' @returns A data.frame with the filtered data.
@@ -164,7 +164,7 @@ filter_expression_data <- function(
   # To filter, we do three things. First, we look at the data and split it
   # groupwise. Secondly, we apply to each split, row-wise, a function that
   # gives us TRUE if at least `min_presence` columns have expression over
-  # `expression_treshold` expression. We save these vectors into a data frame,
+  # `expression_threshold` expression. We save these vectors into a data frame,
   # the `truth_dataframe`, with a col for each group. Finally, we collapse
   # this dataframe to a single truth key, with one entry per row, by applying
   # `any` row-wise, thus keeping an entry if the function described above is
@@ -1191,7 +1191,7 @@ bioTEA <- function(
     printPlots(\() {
       boxplot(
         expression_set, las = 2, col = group_colors,
-        main = "Expression values per sample", ylab = "log2 (intesity)"
+        main = "Expression values per sample", ylab = "log2 (intensity)"
       )
     }, "Pre-normalization boxpot")
     printPlots(\() {
@@ -1212,7 +1212,7 @@ bioTEA <- function(
     boxplot(
       expression_set,
       las = 2, col = group_colors[experimental_design$groups],
-      main = "Expression values per sample", ylab = "log2 (intesity)"
+      main = "Expression values per sample", ylab = "log2 (intensity)"
       )
     },
     "Final Boxplot"

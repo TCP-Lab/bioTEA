@@ -501,7 +501,10 @@ class SpecialCommand(Enum):
 
 
 def run_special_biotea_command(command: SpecialCommand, version: BioTeaBoxVersion):
-    """Runs a special bioTEA box command that does not require args."""
+    """Runs a special bioTEA box command that does not require args.
+
+    This means we also do not need an interface, or mounts, or anything special.
+    """
     client = docker.from_env()
 
     if version == "latest":
@@ -523,7 +526,9 @@ def run_special_biotea_command(command: SpecialCommand, version: BioTeaBoxVersio
         log.error(f"Cannot find local image: {version}")
         return 0
 
-    log.info(f"Running special command '{command.value}' in version '{version}'.")
+    log.info(
+        f"Running special command '{command.value}' in container version '{version}'."
+    )
 
     composed_command = str(os.getuid()) + " " + str(os.getgid()) + " " + command.value
 

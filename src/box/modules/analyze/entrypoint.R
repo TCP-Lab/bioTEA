@@ -72,7 +72,7 @@ module.packages <- c(
 graceful_load(module.packages)
 
 # Load the functions for this module
-source("/bioTEA/modules/analize/analysis_core.R")
+source("/bioTEA/modules/analyze/analysis_core.R")
 
 # Run the module
 # Set options for printPlots

@@ -354,7 +354,7 @@ def run_biotea_box_analysis(
     args["input.file"] = input_file.name
 
     response = run_biotea_box(
-        "analize",
+        "analyze",
         arguments=args,
         interface=AnalyzeInterface,
         input_anchor=input_file.parent,

@@ -184,8 +184,8 @@ tryCatch(
             annotation = {
                 run_module("annotation", COMMAND_ARGS, exit_immediately = TRUE)
             },
-            analize = {
-                run_module("analize", COMMAND_ARGS, exit_immediately = TRUE)
+            analyze = {
+                run_module("analyze", COMMAND_ARGS, exit_immediately = TRUE)
             },
             utils = {
                 run_module("utils", COMMAND_ARGS, exit_immediately = TRUE)
