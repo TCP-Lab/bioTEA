@@ -29,10 +29,10 @@ jobs:
 
       - name: Build a new bleeding container
         uses: docker/build-push-action@v2
-        working-directory: ./src
         with:
           push: false
           tags: cmalabscience/biotea-box:bleeding
+          context: ./src
 
       - name: Test with pytest
         working-directory: ./src/bioTea
