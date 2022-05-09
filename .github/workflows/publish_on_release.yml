@@ -3,6 +3,7 @@ name: Publish bioTEA on PyPi
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   rebuild-docker:
@@ -39,7 +40,7 @@ jobs:
     - name: Set up Python 3.10
       uses: actions/setup-python@v1
       with:
-        python-version: 3.10
+        python-version: "3.10"
     - name: Install pypa/build
       working-directory: ./src/bioTea
       run: >-
