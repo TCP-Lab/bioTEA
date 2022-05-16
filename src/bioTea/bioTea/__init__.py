@@ -17,7 +17,7 @@ from bioTea import resources
 
 init(autoreset=True)
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 # Set what is exported by the __init__
 __all__ = ["__version__", "OPTIONS"]
 
