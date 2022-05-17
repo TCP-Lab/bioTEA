@@ -661,6 +661,7 @@ run_rankprod <- function(
             )
           )
           control_set <- rowMeans(control_set)
+          control_set <- as.data.frame(control_set)
           colnames(control_set) <- paste0("averaged_", control_group)
         } else if (ncol(control_set) == 0) {
           stop(
@@ -681,6 +682,7 @@ run_rankprod <- function(
             )
           )
           treated_set <- rowMeans(treated_set)
+          treated_set <- as.data.frame(treated_set)
           colnames(treated_set) <- paste0("averaged_", treated_group)
         } else if (ncol(treated_set) == 0) {
           stop(
