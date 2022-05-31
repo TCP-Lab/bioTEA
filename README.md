@@ -36,7 +36,7 @@ If installed correctly, `biotea info` should give some information on the tool.
 ## Usage
 The publication provides an overview of the tool and its usage. It is a good place to start. For more information on the various commands, read [the wiki](https://github.com/CMA-Lab/bioTEA/wiki).
 
-If you run into problems, read [the FAQ page on the wiki](https://github.com/CMA-Lab/bioTEA/wiki). If you still cannot solve the issue, [file a bug report](https://github.com/CMA-Lab/bioTEA/issues/new), detailing as much as you can your problem, including the versions of bioTEA, Python interpreter, Docker engine and your OS.
+If you run into problems, read [the FAQ page on the wiki](https://github.com/CMA-Lab/bioTEA/wiki/Frequently-Asked-Questions). If you still cannot solve the issue, [file a bug report](https://github.com/CMA-Lab/bioTEA/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+), detailing as much as you can your problem, including the versions of bioTEA, Python interpreter, Docker engine and your OS.
 
 ## Contributing
 To learn how you can contribute to the tool, [read the CONTRIBUTING guide](https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md).
