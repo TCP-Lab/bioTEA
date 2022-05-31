@@ -44,7 +44,7 @@ _possible_option_paths = [
     Path("~/.bioTEA/config.yaml"),
     Path("~/.bioTEA/config.yml"),
     Path("~/.config/bioTEA/config.yaml"),
-    Path("~/.config/bioTEA/config.yaml"),
+    Path("~/.config/bioTEA/config.yml"),
 ]
 _all_local_opts = []
 for path in _possible_option_paths:
