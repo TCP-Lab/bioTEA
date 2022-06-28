@@ -11,7 +11,7 @@ import yaml
 import bioTea.pour as pour
 from bioTea import resources
 from bioTea.docker_wrapper import SpecialCommand, run_special_biotea_command
-from bioTea.utils.strings import TEA_LOGO
+from bioTea.utils.strings import INTRO, TEA_LOGO
 from bioTea.utils.tools import make_path_valid
 from bioTea.wizard import interactive_metadata_to_biotea_box_options, wizard
 
@@ -56,6 +56,9 @@ def generic_info(ctx: typer.Context):
     if ctx.invoked_subcommand:
         return
 
+    # This is only printed if there is no subcommand invoked.
+    print(INTRO)
+
 
 @info.command(name="containers")
 def info_containers_command():
@@ -66,6 +69,8 @@ def info_containers_command():
 @info.command(name="biotea")
 def info_biotea_command():
     """Get information on the version of bioTEA."""
+    # Add some free real estate
+    print("\n")
     pour.info_biotea()
 
 

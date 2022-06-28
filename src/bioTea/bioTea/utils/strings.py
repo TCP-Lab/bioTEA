@@ -72,6 +72,37 @@ def make_square(logo, side="left"):
     return "\n".join(res)
 
 
+def break_long_lines(text: str, max_len: int = 80) -> str:
+    """This breaks very long lines in `text` to `max_len`.
+
+    Only breaks at spaces.
+    """
+    lines = text.split("\n")
+    new_lines = []
+
+    for line in lines:
+        # If the line is already ok, leave it as-is
+        if len(line) <= max_len:
+            new_lines.append(line)
+            continue
+
+        # If not, we have work to do
+        words = line.split(" ")
+        new_line = ""
+        for word in words:
+            if len(f"{new_line} {word}") > (max_len + 1):
+                # The lstrip is there to remove the extra space at the start
+                # the same goes for the +1 above
+                new_lines.append(new_line.lstrip())
+                new_line = ""
+            new_line += f" {word}"
+        new_lines.append(new_line.lstrip())
+
+    new_text = "\n".join(new_lines)
+
+    return new_text
+
+
 TEA = """                                                    __/\__
              ;,'                               . _  \\\\''//
      _o_    ;:;' __    _     _______________   -( )-/_||_\\
@@ -136,4 +167,19 @@ WIZARD_LOGO = (
     )
     + "\n"
     + WIZARD_WORD
+)
+
+
+INTRO = break_long_lines(
+    """
+BioTEA, where Tea is short for Transcript Enrichment Analysis, is a pipeline for Differential Gene expression Analysis with microarray and RNA-seq data.
+
+It can download, preprocess and perform DEAs quickly, easily and in a reproducible way from the command line.
+
+All commands (including the bare "biotea") have an "--help" option to get a description and more information on the possible options of the command. You are encouraged to use it to learn more for each command.
+
+If you use BioTEA for your research, please cite our publication. Learn more at the README on GitHub.
+
+For more information, try "biotea info biotea" and "biotea info containers".
+"""
 )
