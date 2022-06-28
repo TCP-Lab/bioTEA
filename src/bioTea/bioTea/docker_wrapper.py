@@ -18,14 +18,12 @@ import typer
 from docker.types import Mount
 from packaging.version import LegacyVersion, parse
 
+from bioTea import __version__
 from bioTea.utils.errors import ContainerExitError, ImageNotFoundError
 from bioTea.utils.path_checker import is_path_exists_or_creatable_portable
 from bioTea.utils.tools import ConsoleWindow
 
 log = logging.getLogger(__name__)
-
-COMPATIBLE_VERSIONS = ["bleeding"]
-"""Compatible BioTeaBox versions that can be ran by bioTEA"""
 
 REPO = "cmalabscience/biotea-box"
 
@@ -122,6 +120,35 @@ def get_latest_version() -> BioTeaBoxVersion:
     if all_vers:
         return sorted(all_vers)[-1]
     raise ImageNotFoundError("No valid 'latest' version found.")
+
+
+def is_version_compatible(version: BioTeaBoxVersion) -> bool:
+    """Test if the input version is compatible with the current bioTEA version.
+
+    Assumes compatibility for the future (bleeding) as well as all versions with
+    identical major and minor versions.
+
+    Args:
+        version (BioTeaBoxVersion): The version to check for compatibility.
+
+    Returns:
+        bool: Whether the version is compatible or not.
+    """
+
+    if version == "bleeding":
+        return True
+
+    biotea_parsed = parse(__version__)
+
+    log.debug(
+        f"Checking for version compatibility."
+        "BioTEA version: {biotea_parsed}. Inputted version: {version.realversion}"
+    )
+
+    return (
+        version.realversion.major == biotea_parsed.major
+        and biotea_parsed.minor == version.realversion.minor
+    )
 
 
 # Some checks
@@ -385,7 +412,7 @@ def run_biotea_box(
     if version not in get_installed_versions(client=client):
         pull_biotea_box_version(version, client=client)
 
-    if version not in COMPATIBLE_VERSIONS:
+    if not is_version_compatible(version):
         log.warn(
             f"Selected an incompatible version '{version}'. BioTEA might not work."
         )
@@ -514,7 +541,7 @@ def run_special_biotea_command(command: SpecialCommand, version: BioTeaBoxVersio
     if version not in get_installed_versions(client=client):
         pull_biotea_box_version(version, client=client)
 
-    if version not in COMPATIBLE_VERSIONS:
+    if not is_version_compatible(version):
         log.warn(
             f"Selected an incompatible version '{version}'. BioTEA might not work."
         )
