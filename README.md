@@ -1,9 +1,16 @@
-[![Release](https://img.shields.io/github/v/release/CMA-Lab/bioTEA?style=flat-square)](https://github.com/CMA-Lab/bioTEA/releases)
-[![PyPi](https://img.shields.io/pypi/v/biotea?style=flat-square)](https://pypi.org/project/bioTEA/)
-[![Tests](https://img.shields.io/github/workflow/status/CMA-Lab/bioTEA/Tests?label=Tests&style=flat-square)](https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md)
-[![PyVersions](https://img.shields.io/pypi/pyversions/biotea?style=flat-square)](https://www.python.org/)
+<p align="center">
+    <!-- Links to shields.io. Uncomment when needed, if needed. -->
+  <a href="https://github.com/CMA-Lab/bioTEA/releases"><img src="https://img.shields.io/github/v/release/CMA-Lab/bioTEA?style=flat-square" alt="Releases"/></a>
+  <a href="https://pypi.org/project/biotea/"><img src="https://img.shields.io/pypi/v/biotea?style=flat-square" alt="PiPY"/></a>
+  <a href="https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/github/workflow/status/CMA-Lab/bioTEA/Tests?label=Tests&style=flat-square" alt="Tests"/></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/pypi/pyversions/bioTEA?style=flat-square" alt="Python Version"/></a>
+</p>
 
-# BioTEA
+<p align="center">
+  <img src="./src/Logo.png" width="450"/>
+</p>
+
+
 BioTEA, where Tea is short for Transcript Enrichment Analysis, is a pipeline for Differential Gene expression Analysis with microarray and RNA-seq data.
 It can download, preprocess and perform DEAs quickly, easily and in a reproducible way from the command line.
 
