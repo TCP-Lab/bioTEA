@@ -17,6 +17,7 @@ import requests
 import typer
 from docker.types import Mount
 from packaging.version import LegacyVersion, parse
+from typer import Abort
 
 from bioTea import __version__
 from bioTea.utils.errors import ContainerExitError, ImageNotFoundError
@@ -25,7 +26,9 @@ from bioTea.utils.tools import ConsoleWindow
 
 log = logging.getLogger(__name__)
 
-REPO = "cmalabscience/biotea-box"
+NAMESPACE = "cmalabscience"
+LEAF = "biotea-box"
+REPO = f"{NAMESPACE}/{LEAF}"
 
 POSSIBLE_LOG_LEVELS = ("info", "debug", "error", "warning", "disable")
 
@@ -96,10 +99,14 @@ def delete_biotea_box_version(
 
 
 def get_all_versions() -> list[BioTeaBoxVersion]:
-    endpoint = f"https://registry.hub.docker.com/v1/repositories/{REPO}/tags"
-    res = requests.get(endpoint, timeout=20)
+    endpoint = f"https://registry.hub.docker.com/v2/namespaces/{NAMESPACE}/repositories/{LEAF}/tags"
+    try:
+        res = requests.get(endpoint, timeout=20)
+    except Exception as e:
+        log.exception("Failed to retrieve the biotea-box repo information", e)
+        raise Abort
 
-    images = json.loads(res.text)
+    images = json.loads(res.text)["results"]
 
     versions = []
     for image in images:

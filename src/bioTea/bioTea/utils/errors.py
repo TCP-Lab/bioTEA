@@ -121,5 +121,6 @@ class RaiserHandler(ErrorHandler, error=BioTeaError):
     def handle(error: Exception, invoker: Callable, trace: str, inputs: dict) -> None:
         raise error
 
+
 class UnsupportedOptionError(Exception):
     pass
