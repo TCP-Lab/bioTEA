@@ -2,11 +2,12 @@
 
 A pipeline for processing transcription data to get differential gene expression.
 """
-from functools import reduce
+import collections
 import importlib.resources as pkg_resources
 import logging
 import os
 from copy import copy
+from functools import reduce
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -16,11 +17,10 @@ from colorama import Back, Fore, Style, init
 
 from bioTea import resources
 from bioTea.utils.errors import UnsupportedOptionError
-import collections
 
 init(autoreset=True)
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 # Set what is exported by the __init__
 __all__ = ["__version__", "OPTIONS"]
 
