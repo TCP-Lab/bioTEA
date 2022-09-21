@@ -233,10 +233,13 @@ def prepare_agilent(
     if version not in get_installed_versions():
         pull_biotea_box_version(version)
 
+    if plot_number is None:
+        plot_number = 1_000_000
+
     args = {
         "output_file": output_file.name,
         "remove_controls": remove_controls,
-        "n_plots": plot_number or 1_000_000,
+        "n_plots": plot_number,
         "grep_pattern": grep_pattern,
         # Plot options
         "use_pdf": not use_png,
@@ -268,7 +271,7 @@ def prepare_affymetrix(
     version: str = "latest",
     log_name: Optional[str] = None,
     remove_controls: bool = False,
-    plot_number: int = 1e10,
+    plot_number: int = None,
     plot_size: str = "12,5",
     use_png: bool = False,
     verbose: bool = False,
@@ -293,10 +296,13 @@ def prepare_affymetrix(
     if version not in get_installed_versions():
         pull_biotea_box_version(version)
 
+    if plot_number is None:
+        plot_number = 1_000_000
+
     args = {
         "output.file": output_file.name,
         "remove.controls": remove_controls,
-        "n_plots": plot_number or 1e10,
+        "n_plots": plot_number,
         # Plot options
         "use_pdf": not use_png,
         "plot_width": plot_width,

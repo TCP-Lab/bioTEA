@@ -149,7 +149,7 @@ def is_version_compatible(version: BioTeaBoxVersion) -> bool:
 
     log.debug(
         f"Checking for version compatibility."
-        "BioTEA version: {biotea_parsed}. Inputted version: {version.realversion}"
+        f"BioTEA version: {biotea_parsed}. Inputted version: {version.realversion}"
     )
 
     return (

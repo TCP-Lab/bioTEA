@@ -453,7 +453,7 @@ def ask_choices(
 ) -> Union[str, list[str]]:
     if "" in choices:
         clear_choices = [x for x in choices if x != ""]
-        composed_prompt = f"{prompt} " + ", ".join(clear_choices) + "or leave empty: "
+        composed_prompt = f"{prompt} " + ", ".join(clear_choices) + " or leave empty: "
     else:
         composed_prompt = f"{prompt} " + ", ".join(choices) + ": "
 
