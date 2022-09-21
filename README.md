@@ -15,7 +15,7 @@ BioTEA, where Tea is short for Transcript Enrichment Analysis, is a pipeline for
 It can download, preprocess and perform DEAs quickly, easily and in a reproducible way from the command line.
 
 **Read the publication:**
-> [Visentin, L.; Munaron, L.; Ruffinatti, F.A. BioTEA: containerized methods of analysis for microarray-based transcriptomics data. Preprints 2022, 1, 0.](https://doi.org/10.1101/2022.05.26.493502)
+> [Visentin, L.; Scarpellino, G.; Chinigò, G.; Munaron, L.; Ruffinatti, F.A. BioTEA: Containerized Methods of Analysis for Microarray-Based Transcriptomics Data. Biology 2022, 11, 1346.](https://doi.org/10.3390/biology11091346)
 
 ## Installation
 
