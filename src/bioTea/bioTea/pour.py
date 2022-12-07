@@ -348,7 +348,7 @@ def run_biotea_box_analysis(
 
     if not version in ["bleeding"] and version not in get_all_versions():
         log.error(f"Invalid BioTeaBox version {version}")
-        return
+        raise ImageNotFoundError
 
     if version not in get_installed_versions():
         pull_biotea_box_version(version)

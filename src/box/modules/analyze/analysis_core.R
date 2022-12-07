@@ -720,11 +720,11 @@ run_rankprod <- function(
       }
       if (any(table(paste(batches, groups)) == 1)) {
         log$warn("Some batches have only one sample per group. Rankprod cannot correct such a batch effect")
-        batches <- rep(1, length(groups))
+        rp_origin <- rep(1, length(groups))
       }
-      batches |> as.factor() |> as.numeric() -> batches
+      batches |> as.factor() |> as.numeric() -> rp_origin
     } else {
-      batches <- rep(1, ncol(sub_expression_set))
+      rp_origin <- rep(1, ncol(sub_expression_set))
     }
 
     # invisible(capture.output()) is to suppress automatic output to console
@@ -732,7 +732,7 @@ run_rankprod <- function(
     log$info("Running RankProduct...")
     RP.out <- RP.advance(
       sub_expression_set,
-      rp_class_labels, origin = batches,
+      rp_class_labels, origin = rp_origin,
       gene.names = rownames(sub_expression_set),
       logged = TRUE, na.rm = FALSE, plot = FALSE, rand = 123
     )

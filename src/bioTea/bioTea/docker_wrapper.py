@@ -358,7 +358,7 @@ class AnalyzeInterface(BioTeaBoxInterface):
         "convert_counts": BioTeaBoxArgument(is_(bool), False),
         "run_limma_analysis": BioTeaBoxArgument(is_(bool), True),
         "run_rankprod_analysis": BioTeaBoxArgument(is_(bool), True),
-        "batches": BioTeaBoxArgument(na_or(is_list_of(is_valid_design_string)), "NA"),
+        "batches": BioTeaBoxArgument(na_or(is_valid_design_string), "NA"),
         "extra_limma_vars": BioTeaBoxArgument(
             na_or(is_list_of(is_valid_design_string)), "NA"
         ),
@@ -416,6 +416,8 @@ def run_biotea_box(
         version = get_latest_version()
         log.info(f"Latest version: {version}")
 
+    version = BioTeaBoxVersion(version)
+
     if version not in get_installed_versions(client=client):
         pull_biotea_box_version(version, client=client)
 
@@ -452,7 +454,7 @@ def run_biotea_box(
         log.exception(
             "Invalid arguments passed to interface. Please open an issue with the bioTEA logs."
         )
-        return 0
+        raise
 
     log.info(f"Launching container with version {version}")
 
