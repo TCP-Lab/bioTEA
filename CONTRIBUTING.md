@@ -15,7 +15,7 @@ The Python code lives in `src/biotea/`. The code is a standard PyPA package. We 
 
 Please make docstring to functions, following the [Google standard for Python docstrings](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings).
 
-Test if the package works with `pytest` before submitting a pull request. Tests live in the `tests/` folder.
+Test if the package works with `pytest` before submitting a pull request. Tests live in the `tests/` folder. To run tests, you will need to rebuild the docker locally with the "bleeding" version tag. In the `./src` folder, run `docker build -t cmalabscience/biotea-box:bleeding .` to rebuild the docker with your local code. Then launch `pytest ./bioTea` to run tests.
 
 The structure of the Python package is straightforward (I hope). Start reading [the `cli.py`](https://github.com/CMA-Lab/bioTEA/blob/9d8f4f9f67145cc98c913ccd997ace62295a8817/src/bioTea/bioTea/cli.py) file first. The exported command that is invoked by `biotea` is `cli_root()` (at the time of writing). Refer to the [`setup.cfg`](https://github.com/CMA-Lab/bioTEA/blob/9d8f4f9f67145cc98c913ccd997ace62295a8817/src/bioTea/setup.cfg) file for more info.
 
