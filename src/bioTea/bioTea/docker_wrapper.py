@@ -33,9 +33,10 @@ REPO = f"{NAMESPACE}/{LEAF}"
 POSSIBLE_LOG_LEVELS = ("info", "debug", "error", "warning", "disable")
 
 
-@dataclass
 class BioTeaBoxVersion:
-    raw_version: str
+    def __init__(self, raw_version) -> None:
+        assert isinstance(raw_version, str)
+        self.raw_version = raw_version
 
     @property
     def realversion(self):
@@ -412,11 +413,14 @@ def run_biotea_box(
 
     client = docker.from_env()
 
-    if version == "latest":
-        version = get_latest_version()
-        log.info(f"Latest version: {version}")
-
-    version = BioTeaBoxVersion(version)
+    if isinstance(version, str):
+        if version == "latest":
+            version = get_latest_version()
+            log.info(f"Latest version: {version}")
+        else:
+            version = BioTeaBoxVersion(version)
+    
+    assert isinstance(version, BioTeaBoxVersion), "Version parsing failed."
 
     if version not in get_installed_versions(client=client):
         pull_biotea_box_version(version, client=client)
