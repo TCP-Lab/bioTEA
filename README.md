@@ -38,6 +38,8 @@ It can download, preprocess and perform DEAs quickly, easily and in a reproducib
 3. **Optional** but strongly recommended: Make a Python virtual environment to use bioTEA in. You can search online for a way to do this in your OS.
 4. Install bioTEA with `pip`: `pip install biotea`.
 
+> **IMPORTANT**: Sometimes, critical bugs are fixed on the main branch but are yet to be released to PyPi. To get the development version of BioTEA, install it with `pip install 'biotea @ git+https://github.com/CMA-Lab/bioTEA.git#subdirectory=src/bioTea'`. If you run into problems, try and use this bleeding edge version, your issue might be fixed already.
+
 If installed correctly, `biotea info` should give some information on the tool.
 
 ## Usage
