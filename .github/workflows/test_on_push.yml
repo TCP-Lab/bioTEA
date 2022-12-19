@@ -17,7 +17,7 @@ jobs:
       - name: Checkout the latest biotea-box
         uses: actions/checkout@master
         with:
-          name: CMA-Lab/bioTEA-box
+          repository: CMA-Lab/bioTEA-box
           path: ./box
 
       - name: Set up Python ${{ matrix.python-version }}
