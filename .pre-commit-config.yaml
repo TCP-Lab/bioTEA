@@ -20,5 +20,5 @@ repos:
   rev: 22.3.0
   hooks:
   - id: black
-    args: ["./src/bioTea/"]
+    args: ["./bioTea/"]
     language_version: python3.10

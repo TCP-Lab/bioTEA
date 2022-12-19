@@ -21,9 +21,9 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Desktop (please complete the following information):**
- - OS: 
- - BioTEA Version (Run `biotea info biotea`): 
- - Docker engine version (Run `docker --version`): 
+ - OS:
+ - BioTEA Version (Run `biotea info biotea`):
+ - Docker engine version (Run `docker --version`):
  - BioTEA container version (if applicable):
 
 **Additional context**

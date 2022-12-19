@@ -163,7 +163,7 @@ def test_generic_unsorted_cols(tmpdir, datafiles):
 
 @pytest.mark.datafiles(
     os.path.join(FIXTURE_DIR, "Fake_options_files/fake_batches_run.yaml"),
-    os.path.join(FIXTURE_DIR, "fake_count_matrix.csv")
+    os.path.join(FIXTURE_DIR, "fake_count_matrix.csv"),
 )
 def test_batches(tmpdir, datafiles):
     res = subprocess.run(
@@ -174,14 +174,15 @@ def test_batches(tmpdir, datafiles):
             "bleeding",
             os.path.join(datafiles, "fake_batches_run.yaml"),
             tmpdir,
-            os.path.join(datafiles, "fake_count_matrix.csv")
+            os.path.join(datafiles, "fake_count_matrix.csv"),
         ]
     )
     assert res.returncode == 0, f"Command failed: {res.stderr}"
 
+
 @pytest.mark.datafiles(
     os.path.join(FIXTURE_DIR, "Fake_options_files/fake_batches_run_two_contrasts.yaml"),
-    os.path.join(FIXTURE_DIR, "fake_count_matrix.csv")
+    os.path.join(FIXTURE_DIR, "fake_count_matrix.csv"),
 )
 def test_batches_two_contrasts(tmpdir, datafiles):
 
@@ -193,7 +194,7 @@ def test_batches_two_contrasts(tmpdir, datafiles):
             "bleeding",
             os.path.join(datafiles, "fake_batches_run_two_contrasts.yaml"),
             tmpdir,
-            os.path.join(datafiles, "fake_count_matrix.csv")
+            os.path.join(datafiles, "fake_count_matrix.csv"),
         ]
     )
     assert res.returncode == 0, f"Command failed: {res.stderr}"

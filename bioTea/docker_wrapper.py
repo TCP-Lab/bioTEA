@@ -418,7 +418,7 @@ def run_biotea_box(
             log.info(f"Latest version: {version}")
         else:
             version = BioTeaBoxVersion(version)
-    
+
     assert isinstance(version, BioTeaBoxVersion), "Version parsing failed."
 
     if version not in get_installed_versions(client=client):

@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout this repo
         uses: actions/checkout@master
-      
+
       - name: Checkout the latest biotea-box
         uses: actions/checkout@master
         with:
