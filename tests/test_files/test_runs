@@ -1,0 +1,14 @@
+# Generic run w/o plots
+biotea analyze --version bleeding ./fake_expression_run.yaml /tmp/bioTEAtests/ ../fake_expression_matrix.csv
+
+# Generic run with plots
+biotea analyze --version bleeding ./fake_expression_run_wet.yaml /tmp/bioTEAtests/ ../fake_expression_matrix.csv
+
+# Generic run with plots, annotated
+biotea analyze --version bleeding ./fake_expression_run_with_annots.yaml /tmp/bioTEAtests/ ../fake_expression_matrix_annotatable.csv
+
+# Generic run with count data
+biotea analyze --version bleeding ./fake_counts_run.yaml /tmp/bioTEAtests/ ../fake_count_matrix.csv
+
+# Testing that the usorted cols remain unsorted
+biotea analyze --version bleeding ./fake_counts_run.yaml /tmp/bioTEAtests/ ../fake_expression_matrix_unsorted.csv

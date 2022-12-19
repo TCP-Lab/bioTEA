@@ -1,0 +1,102 @@
+# Options for BioTeaBox. Change what you need following the descriptions.
+# The options have a type annotation beside them, showing the allowed
+# types for that option. Using the wrong types will lead to errors.
+# More info in the README.
+
+## GENERAL - General options
+general:
+  # Print out small snippets of data before every analysis step?
+  show_data_snippets: true # bool
+
+  # Specify annotations to add to the data
+  # If `true` is specified, will attempt to annotate with local annotations
+  # suitable for human chips (both agilent or affymetrix).
+  # If `false` is specified, no annotations are added.
+  # Otherwise, pass here the name of the database on bioconductor you wish to
+  # source the annotations from.
+  annotation_database: true # bool OR str
+
+  # PLOTS - Control plot size and extension
+  plots:
+    # Save PNG plots? By default saves PDF plots.
+    save_png: false # bool
+
+    # Plot width and height in inches.
+    plot_width: 16 # int
+    plot_height: 9 # int
+
+    # PPI (pixel per inch) value for PNG plots
+    png_resolution: 250 # int
+
+    # If true, plots will be enumerated in the order they are created
+    enumerate_plots: true # bool
+
+
+## SWITCHES - Various switches to turn parts of the analysis on or off
+switches:
+  # Run the analysis, but don't save any output file. Useful to test the
+  # analysis before committing.
+  dryrun: false # bool
+  # Should re-run normalization on the data? This is useful if the data was
+  # not normalized beforehand.
+  renormalize: false # bool
+  # If the data comes from a RNA-seq experiment, it has to be converted to
+  # continuous expression values with `voom` before running the DEA.
+  # Set this to true if the input data is count data.
+  convert_counts: false # bool
+  # Run Differential gene expression detection with `limma`
+  # This uses parametric tests to find DEGs.
+  limma: true # bool
+  # Run Differential gene expression detection with `rankproduct`
+  # This uses non-parametric tests to find DEGs.
+  rankproduct: true # bool
+
+
+# DESIGN - Experimental design
+design:
+  # Define the experimental design.
+  # The experimental design describes which samples are of which group, and if
+  # any samples are paired (such as being from the same patient).
+  # NOTE :: The groups themselves must NOT contain numbers (they would be
+  #   interpreted as pairings). Sorry!
+  # The order of the groups is the same as the order of the columns in the input
+  # expression matrix.
+  experimental_design: "[treated, control]:2" # str
+
+  # Select which experimental group pairs should be analysed.
+  # Pass strings of the type "<group1>-<group2>" to see group1 vs group2
+  # (group2 will be the reference).
+  contrasts: ["treated-control"] # list of str
+
+  # Specify from which batch each sample comes from. Used to correct the batch
+  # effect on the data.
+  # Set to `null` if all samples come from the same batch.
+  batches: null # `null` or str
+
+  # Specify any extra grouping variables. These are considered by limma when
+  # running the analysis. Enter each variable as a experimental design string.
+  # Set to `null` if there are no extra variables to account for.
+  extra_limma_vars: null # `null` or nested strings
+  # Example of extra variables:
+  # extra_limma_vars:
+  #   some_variable: "(high, low):2"
+  #   another_var: "[fat, thin]:2"
+
+  # Specify the colours that represent the unique groups in the experimental
+  # design. Must cover all groups or more.
+  group_colors: [
+    "cornflowerblue", "firebrick3", "olivedrab3", "darkgoldenrod1", "purple",
+    "magenta3"
+    ] # list of str
+
+  # Filters:
+  filters:
+    # Filter out (mark as non-differentially-expressed) any genes that have lower
+    # log2 expression than this value. This value depends a lot on the experiment.
+    # The readme has pointers on how to choose the correct value.
+    log2_expression: 4 # num
+    # Filter out any genes that have lower absolute Fold Change than this value.
+    # Usually 0.5 or 1.
+    fold_change: 0.5 # num
+    # Minimum gene presence per group
+    min_groupwise_presence: 0.8

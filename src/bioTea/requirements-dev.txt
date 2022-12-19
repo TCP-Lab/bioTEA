@@ -1,6 +1,0 @@
-pre-commit
-bump2version
-pytest
-pytest-datafiles
-build
-twine
