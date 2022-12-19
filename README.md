@@ -14,6 +14,8 @@
 BioTEA, where Tea is short for Transcript Enrichment Analysis, is a pipeline for Differential Gene expression Analysis with microarray and RNA-seq data.
 It can download, preprocess and perform DEAs quickly, easily and in a reproducible way from the command line.
 
+[Check out the BioTEA Docker container, where the analysis code of BioTEA lives!](https://github.com/CMA-Lab/bioTEA-box)
+
 **Read the publication:**
 > [Visentin, L.; Scarpellino, G.; Chinigò, G.; Munaron, L.; Ruffinatti, F.A. BioTEA: Containerized Methods of Analysis for Microarray-Based Transcriptomics Data. Biology 2022, 11, 1346.](https://doi.org/10.3390/biology11091346)
 
@@ -47,7 +49,9 @@ If installed correctly, `biotea info` should give some information on the tool.
 ## Usage
 The publication provides an overview of the tool and its usage. It is a good place to start. For more information on the various commands, read [the wiki](https://github.com/CMA-Lab/bioTEA/wiki).
 
-If you run into problems, read [the FAQ page on the wiki](https://github.com/CMA-Lab/bioTEA/wiki/Frequently-Asked-Questions). If you still cannot solve the issue, [file a bug report](https://github.com/CMA-Lab/bioTEA/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+), detailing as much as you can your problem, including the versions of bioTEA, Python interpreter, Docker engine and your OS.
+If you run into problems using the BioTEA CLI, read [the FAQ page on the wiki](https://github.com/CMA-Lab/bioTEA/wiki/Frequently-Asked-Questions). If you still cannot solve the issue, [file a bug report](https://github.com/CMA-Lab/bioTEA/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+), detailing as much as you can your problem, including the versions of bioTEA, Python interpreter, Docker engine and your OS.
+
+If you think that the issue is coming from the docker container (i.e. the Docker container is correctly launched but the analysis fails), you can [create an issue in the bioTEA-box repository](https://github.com/CMA-Lab/bioTEA-box/issues/new).
 
 ## Contributing
 To learn how you can contribute to the tool, [read the CONTRIBUTING guide](https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md).
