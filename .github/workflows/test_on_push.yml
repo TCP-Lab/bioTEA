@@ -13,6 +13,12 @@ jobs:
     steps:
       - name: Checkout this repo
         uses: actions/checkout@master
+      
+      - name: Checkout the latest biotea-box
+        uses: actions/checkout@master
+        with:
+          name: CMA-Lab/bioTEA-box
+          path: ./box
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
@@ -25,12 +31,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
           pip install -e .
-      
-      - uses: actions/checkout@master
-      - name: Checkout the latest biotea-box
-        with:
-          name: CMA-Lab/bioTEA-box
-          path: ./box
 
       - name: Build the latest box
         working-directory: ./box
