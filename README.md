@@ -2,14 +2,13 @@
     <!-- Links to shields.io. Uncomment when needed, if needed. -->
   <a href="https://github.com/CMA-Lab/bioTEA/releases"><img src="https://img.shields.io/github/v/release/CMA-Lab/bioTEA?style=flat-square" alt="Releases"/></a>
   <a href="https://pypi.org/project/biotea/"><img src="https://img.shields.io/pypi/v/biotea?style=flat-square" alt="PiPY"/></a>
-  <a href="https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/github/workflow/status/CMA-Lab/bioTEA/Tests?label=Tests&style=flat-square" alt="Tests"/></a>
+  <a href="https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/github/actions/workflow/status/CMA-Lab/bioTEA/test_on_push.yml?branch=main" alt="Tests"/></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/pypi/pyversions/bioTEA?style=flat-square" alt="Python Version"/></a>
 </p>
 
 <p align="center">
-  <img src="./src/Logo.png" width="450"/>
+  <img src="./Logo.png" width="450"/>
 </p>
-
 
 BioTEA, where Tea is short for Transcript Enrichment Analysis, is a pipeline for Differential Gene expression Analysis with microarray and RNA-seq data.
 It can download, preprocess and perform DEAs quickly, easily and in a reproducible way from the command line.
@@ -38,7 +37,9 @@ It can download, preprocess and perform DEAs quickly, easily and in a reproducib
 3. **Optional** but strongly recommended: Make a Python virtual environment to use bioTEA in. You can search online for a way to do this in your OS.
 4. Install bioTEA with `pip`: `pip install biotea`.
 
-> **IMPORTANT**: Sometimes, critical bugs are fixed on the main branch but are yet to be released to PyPi. To get the development version of BioTEA, install it with `pip install 'biotea @ git+https://github.com/CMA-Lab/bioTEA.git#subdirectory=src/bioTea'`. If you run into problems, try and use this bleeding edge version, your issue might be fixed already.
+> **IMPORTANT**: Sometimes, critical bugs are fixed on the main branch but are yet to be released to PyPi.
+  To get the development version of BioTEA, install it with `pip install 'biotea @ git+https://github.com/CMA-Lab/bioTEA.git#subdirectory=src/bioTea'`.
+  If you run into problems, try and use this bleeding edge version, your issue might be fixed already!
 
 If installed correctly, `biotea info` should give some information on the tool.
 
@@ -49,3 +50,8 @@ If you run into problems, read [the FAQ page on the wiki](https://github.com/CMA
 
 ## Contributing
 To learn how you can contribute to the tool, [read the CONTRIBUTING guide](https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md).
+
+## Version compatibility
+The BioTEA cli generally gets more frequent updates than the BioTEA box.
+This causes their versions to drift apart.
+We stride to keep compatibility between the BioTEA cli and the box **when the major versions are identical**. This means that all BioTEA version `x.y.z` can run any BioTEA box of version `x.*.*`.

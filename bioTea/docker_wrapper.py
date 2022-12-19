@@ -4,7 +4,6 @@ import json
 import logging
 import os
 from abc import ABC
-from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from numbers import Number

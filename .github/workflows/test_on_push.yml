@@ -11,24 +11,30 @@ jobs:
         python-version: ["3.9", "3.10"]
 
     steps:
-      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
+      - uses: actions/checkout@master
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies and bioTEA
-        working-directory: ./src/bioTea
+        working-directory: .
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
           pip install -e .
+      
+      - uses: actions/checkout@master
+      - name: Checkout the latest biotea-box
+        with:
+          name: CMA-Lab/bioTEA-box
+          path: ./box
 
-      - name: Build a new bleeding container
-        working-directory: ./src
+      - name: Build the latest box
+        working-directory: ./box
         run: docker build -t cmalabscience/biotea-box:bleeding .
 
       - name: Test with pytest
-        working-directory: ./src/bioTea
+        working-directory: .
         run: |
           pytest

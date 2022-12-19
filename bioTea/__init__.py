@@ -20,7 +20,7 @@ from bioTea.utils.errors import UnsupportedOptionError
 
 init(autoreset=True)
 
-__version__ = "1.0.2"
+__version__ = "1.0.5"
 # Set what is exported by the __init__
 __all__ = ["__version__", "OPTIONS"]
 
