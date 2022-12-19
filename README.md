@@ -2,13 +2,14 @@
     <!-- Links to shields.io. Uncomment when needed, if needed. -->
   <a href="https://github.com/CMA-Lab/bioTEA/releases"><img src="https://img.shields.io/github/v/release/CMA-Lab/bioTEA?style=flat-square" alt="Releases"/></a>
   <a href="https://pypi.org/project/biotea/"><img src="https://img.shields.io/pypi/v/biotea?style=flat-square" alt="PiPY"/></a>
-  <a href="https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/github/actions/workflow/status/CMA-Lab/bioTEA/test_on_push.yml?branch=main" alt="Tests"/></a>
+  <a href="https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/github/actions/workflow/status/CMA-Lab/BioTEA/test_on_push.yml?branch=main&style=flat-square" alt="Tests"/></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/pypi/pyversions/bioTEA?style=flat-square" alt="Python Version"/></a>
 </p>
 
 <p align="center">
   <img src="./Logo.png" width="450"/>
 </p>
+
 
 BioTEA, where Tea is short for Transcript Enrichment Analysis, is a pipeline for Differential Gene expression Analysis with microarray and RNA-seq data.
 It can download, preprocess and perform DEAs quickly, easily and in a reproducible way from the command line.
