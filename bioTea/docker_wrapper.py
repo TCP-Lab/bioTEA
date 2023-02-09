@@ -133,7 +133,7 @@ def is_version_compatible(version: BioTeaBoxVersion) -> bool:
     """Test if the input version is compatible with the current bioTEA version.
 
     Assumes compatibility for the future (bleeding) as well as all versions with
-    identical major and minor versions.
+    identical major versions.
 
     Args:
         version (BioTeaBoxVersion): The version to check for compatibility.
@@ -152,10 +152,7 @@ def is_version_compatible(version: BioTeaBoxVersion) -> bool:
         f"BioTEA version: {biotea_parsed}. Inputted version: {version.realversion}"
     )
 
-    return (
-        version.realversion.major == biotea_parsed.major
-        and biotea_parsed.minor == version.realversion.minor
-    )
+    return version.realversion.major == biotea_parsed.major
 
 
 # Some checks
