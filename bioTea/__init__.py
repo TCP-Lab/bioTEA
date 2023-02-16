@@ -71,7 +71,7 @@ class ColorFormatter(logging.Formatter):
         reset = Fore.RESET + Back.RESET + Style.NORMAL
         color = self.COLORS.get(record.levelname, "")
         if color:
-            record.name = Style.BRIGHT + Fore.BLACK + record.name + reset
+            record.name = Style.BRIGHT + Fore.WHITE + record.name + reset
             if record.levelname != "INFO":
                 record.msg = color + record.msg + reset
             record.levelname = color + record.levelname + reset
