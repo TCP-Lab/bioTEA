@@ -238,11 +238,12 @@ def init_with_options_command(
         with (path / "bioTEA_run_options.yaml").open("w+") as outstream:
             yaml.dump(options, outstream, default_flow_style=False)
         return
-
-    shutil.copy(
-        pkg_resources.path(resources, "bioTEA_run_default_options.yaml"),
-        path / "bioTEA_run_options.yaml",
-    )
+    biotea_resources = pkg_resources.files(__package__)
+    with pkg_resources.as_file(biotea_resources.joinpath("resources", "bioTEA_run_default_options.yaml")) as src:
+        shutil.copy(
+            src,
+            path / "bioTEA_run_options.yaml",
+        )
     log.info(f"Initialized options @ {path / 'bioTEA_run_options.yaml'}")
 
 
