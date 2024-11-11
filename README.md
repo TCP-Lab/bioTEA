@@ -33,7 +33,7 @@ It can download, preprocess and perform DEAs quickly, easily and in a reproducib
      ```
      You may need administrator privileges.
    - For other distros, check your distro package manager documentation.
-2. Install **Python** version 3.9 or over. Again, this is dependent on your package manager:
+2. Install **Python** version 3.12 or over. Again, this is dependent on your package manager:
    - On Ubuntu, run `apt update && apt install python3.9`. Depending on when you read this guide, you may need to tap into [the deadsnakes PPA](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa). Read the guides on the link I provided for more information. Just be sure that the result of `python --version` is `3.9` or higher when you continue to the following steps.
    - On Arch linux, run `pacman -Syu python`.
    - On MacOS, [follow this guide in the python docs](https://docs.python-guide.org/starting/install3/osx/).

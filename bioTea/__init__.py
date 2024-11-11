@@ -24,9 +24,10 @@ __version__ = "1.1.0"
 # Set what is exported by the __init__
 __all__ = ["__version__", "OPTIONS"]
 
+
 # Parse local options for the tool.
 DEFAULT_OPTIONS = yaml.safe_load(
-    pkg_resources.open_text(resources, "default_options.yml")
+    pkg_resources.files(__package__).joinpath("resources/default_options.yml").read_text()
 )
 
 
