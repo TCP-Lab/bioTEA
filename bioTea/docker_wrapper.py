@@ -15,7 +15,7 @@ import docker.errors
 import requests
 import typer
 from docker.types import Mount
-from packaging.version import LegacyVersion, parse
+from packaging.version import Version, parse, InvalidVersion
 from typer import Abort
 
 from bioTea import __version__
@@ -39,7 +39,15 @@ class BioTeaBoxVersion:
 
     @property
     def realversion(self):
-        return parse(self.raw_version)
+        try:
+            return parse(self.raw_version)
+        except InvalidVersion:
+            # This version cannot be parsed. So, we cheat and make it parseable
+            # The most common case is the 'bleeding' version.
+            # This generally works as non-canonical versions usually are only
+            # interested in the equality of the versions.
+            log.warn(f"Parsing invalid version {self.raw_version} as 0.0.0+{self.raw_version}.")
+            return parse(f"0.0.0+{self.raw_version}")
 
     def __lt__(self, other: BioTeaBoxVersion) -> bool:
         if type(other) is str:
@@ -110,9 +118,10 @@ def get_all_versions() -> list[BioTeaBoxVersion]:
 
     versions = []
     for image in images:
-        version = BioTeaBoxVersion(image["name"])
-        if type(version.realversion) is LegacyVersion:
-            log.debug(f"Version '{version}' discarded as it is a Legacy version.")
+        try:
+            version = BioTeaBoxVersion(image["name"])
+        except InvalidVersion:
+            log.warn(f"Skipping {image["name"]} due to unparseable version")
             continue
         versions.append(version)
 
