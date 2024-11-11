@@ -234,7 +234,8 @@ def prepare_agilent(
         pull_biotea_box_version(version)
 
     if plot_number is None:
-        plot_number = 1_000_000
+        # See the comment in the 'prepare_affymetrix' code.
+        plot_number = 10
 
     args = {
         "output_file": output_file.name,
@@ -297,7 +298,15 @@ def prepare_affymetrix(
         pull_biotea_box_version(version)
 
     if plot_number is None:
-        plot_number = 1_000_000
+        # This is the de-facto default plot number.
+        # See the (closed) issue #10 for why this is set here
+        # and why it's set to 10
+        # In short: we must set this to a numeric. It cannot support a string,
+        # or else we would need to change the box's implementation (and it
+        # would be a breaking change). Since making plots is SO SLOW, I
+        # thought it sensible to instead *lower* this default to a more
+        # manageable 10.
+        plot_number = 10
 
     args = {
         "output.file": output_file.name,

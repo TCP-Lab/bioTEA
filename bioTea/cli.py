@@ -171,7 +171,7 @@ def prepare_affymetrix_command(
         None, help="Specify BioTEA box log name for the run"
     ),
     remove_controls: bool = typer.Option(False, help="Remove control probes?"),
-    plot_number: int = typer.Option(1e10, help="Maximum number of plots to show"),
+    plot_number: int = typer.Option(None, help="Maximum number of plots to show"),
     plot_size: str = typer.Option("12,5", help="Size of plots as 'width,height'"),
     use_png: bool = typer.Option(
         False, help="Generate .png files instead of pdf files (600 ppi resolution)."
