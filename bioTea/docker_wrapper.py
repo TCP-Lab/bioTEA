@@ -201,12 +201,15 @@ def is_in(arglist) -> Callable:
 
 
 def is_valid_design_string(argument):
-    # TODO: implement this check
+    # This is a very light check, the real one is in the container
+    # It would be too bothersome to check it here - the design string parsing
+    # code would also need to be duplicated. Let's not do that.
     return is_(str)(argument)
 
 
 def is_valid_color(argument):
-    # TODO: implement this
+    # What is a valid color really? Something that doesn't crash the continer.
+    # Time for live testing!
     return is_(str)(argument)
 
 
