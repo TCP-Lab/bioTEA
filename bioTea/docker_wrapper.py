@@ -46,7 +46,7 @@ class BioTeaBoxVersion:
             # The most common case is the 'bleeding' version.
             # This generally works as non-canonical versions usually are only
             # interested in the equality of the versions.
-            log.warn(f"Not parsing '{self.raw_version}' as it is a legacy version")
+            log.debug(f"Not parsing '{self.raw_version}' as it is a legacy version")
             return self.raw_version
 
     def __lt__(self, other: BioTeaBoxVersion) -> bool:

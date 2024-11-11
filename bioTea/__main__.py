@@ -1,3 +1,3 @@
-from bioTea.cli import cli_root
+from bioTea.cli import main
 
-cli_root()
+main()

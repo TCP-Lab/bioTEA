@@ -81,7 +81,7 @@ class ColorFormatter(logging.Formatter):
 
 # Setup logging
 log = logging.getLogger("bioTea")  # Keep this at the module level name
-log.setLevel(logging.DEBUG)
+log.setLevel(os.environ.get("BIOTEA_LOG", "INFO"))
 log.propagate = False
 # Keep this at DEBUG - set levels in handlers themselves
 

@@ -294,3 +294,14 @@ def generate_annotations_command(
 ):
     """Generate annotations to use with BioTEA box."""
     print("You got to a hidden command! This has not been implemented yet.")
+
+def main():
+    import os
+
+    try:
+        cli_root()
+    except Exception as e:
+        if not os.environ.get("BIOTEA_TRACEBACK"):
+            print("BioTEA exited with an error. To see more information, set the environment variable 'BIOTEA_TRACEBACK' to '1'.")
+        else:
+            raise e

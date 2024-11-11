@@ -53,6 +53,8 @@ If you run into problems using the BioTEA CLI, read [the FAQ page on the wiki](h
 
 If you think that the issue is coming from the docker container (i.e. the Docker container is correctly launched but the analysis fails), you can [create an issue in the bioTEA-box repository](https://github.com/CMA-Lab/bioTEA-box/issues/new).
 
+To change the logging level used by BioTEA, set the `BIOTEA_LOG` variable to the desired log level (e.g. "DEBUG", "WARNING", etc...). By default it is "INFO".
+
 ## Contributing
 To learn how you can contribute to the tool, [read the CONTRIBUTING guide](https://github.com/CMA-Lab/bioTEA/blob/main/CONTRIBUTING.md).
 
