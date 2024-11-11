@@ -18,6 +18,7 @@ from bioTea.docker_wrapper import (
     PrepAgilInterface,
     get_all_versions,
     get_installed_versions,
+    get_remote_versions,
     get_latest_version,
     pull_biotea_box_version,
     run_biotea_box,
@@ -118,22 +119,22 @@ def info_containers():
     """Get information on the downloaded and available BioTeaBox containers."""
     log.info("Getting container info...")
     local_versions = get_installed_versions()
-    remote_versions = get_all_versions()
+    remote_versions = [str(x) for x in get_remote_versions()]
+    all_versions = get_all_versions()
 
     c = lambda x: Fore.LIGHTGREEN_EX + str(x) + Fore.RESET
-    col_remote_vers = [
-        c(ver) if ver in local_versions else str(ver) for ver in remote_versions
+    col_all_vers = [
+        c(ver) if ver in local_versions else str(ver) for ver in all_versions
     ]
 
     local_versions = [str(x) for x in local_versions]
     typer.echo(Fore.LIGHTBLUE_EX + "--- Container Info ---" + Fore.RESET)
-    typer.echo("Locally installed: {}".format(", ".join(sorted(local_versions))))
-    typer.echo("Remotely available: {}".format(", ".join(sorted(col_remote_vers))))
+    typer.echo("All versions: {}".format(", ".join(sorted(col_all_vers))))
     typer.echo(
         Fore.LIGHTGREEN_EX
         + "Note: "
         + Fore.RESET
-        + "Remote containers installed locally are highlighted in green."
+        + "Containers installed locally are highlighted in green."
     )
     typer.echo(Fore.LIGHTBLUE_EX + "----------------------" + Fore.RESET)
 

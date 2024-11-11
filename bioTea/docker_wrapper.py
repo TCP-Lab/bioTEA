@@ -46,8 +46,8 @@ class BioTeaBoxVersion:
             # The most common case is the 'bleeding' version.
             # This generally works as non-canonical versions usually are only
             # interested in the equality of the versions.
-            log.warn(f"Parsing invalid version {self.raw_version} as 0.0.0+{self.raw_version}.")
-            return parse(f"0.0.0+{self.raw_version}")
+            log.warn(f"Not parsing '{self.raw_version}' as it is a legacy version")
+            return self.raw_version
 
     def __lt__(self, other: BioTeaBoxVersion) -> bool:
         if type(other) is str:
@@ -55,6 +55,10 @@ class BioTeaBoxVersion:
 
         if type(other) is not BioTeaBoxVersion:
             raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
+
+        if type(self.realversion) is str:
+            log.debug("Indeterminate verison comparison. Returning None")
+            return None
         return self.realversion < other.realversion
 
     def __eq__(self, other: object) -> bool:
@@ -88,7 +92,7 @@ def pull_biotea_box_version(
         raise ImageNotFoundError(str(version))
 
     log.info(f"Pulling remote image {version}...")
-    client.images.pull(f"{REPO}:{version.raw_version}")
+    client.images.pull(f"{REPO}:{version}")
     log.info("Pulled image.")
 
 
@@ -106,7 +110,7 @@ def delete_biotea_box_version(
     return True
 
 
-def get_all_versions() -> list[BioTeaBoxVersion]:
+def get_remote_versions() -> list[BioTeaBoxVersion]:
     endpoint = f"https://registry.hub.docker.com/v2/namespaces/{NAMESPACE}/repositories/{LEAF}/tags"
     try:
         res = requests.get(endpoint, timeout=20)
@@ -130,6 +134,11 @@ def get_all_versions() -> list[BioTeaBoxVersion]:
 
     return versions
 
+def get_all_versions() -> list[BioTeaBoxVersion]:
+    installed = get_installed_versions()
+    installed.extend(get_remote_versions())
+
+    return installed
 
 def get_latest_version() -> BioTeaBoxVersion:
     all_vers = get_all_versions()
