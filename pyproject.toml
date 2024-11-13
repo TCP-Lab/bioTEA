@@ -4,3 +4,7 @@ requires = [
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest_env]
+BIOTEA_LOG = "DEBUG"
+BIOTEA_TRACEBACK = 1

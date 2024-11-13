@@ -88,6 +88,8 @@ design:
     "magenta3"
     ] # list of str
 
+  rownames_col: "probe_id"
+
   # Filters:
   filters:
     # Filter out (mark as non-differentially-expressed) any genes that have lower

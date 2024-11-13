@@ -387,6 +387,7 @@ def parse_biotea_box_options(path: Path) -> dict:
             "run_limma_analysis": raw_args["switches"]["limma"],
             "run_rankprod_analysis": raw_args["switches"]["rankproduct"],
             "group_colors": raw_args["design"]["group_colors"],
+            "rownames_col": raw_args["design"]["rownames_col"],
             # Plot options
             "use_pdf": not raw_args["general"]["plots"]["save_png"],
             "plot_width": raw_args["general"]["plots"]["plot_width"],

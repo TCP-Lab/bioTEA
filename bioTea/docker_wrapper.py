@@ -17,6 +17,7 @@ import typer
 from docker.types import Mount
 from packaging.version import Version, parse, InvalidVersion
 from typer import Abort
+from enum import Enum
 
 from bioTea import __version__
 from bioTea.utils.errors import ContainerExitError, ImageNotFoundError
@@ -31,23 +32,25 @@ REPO = f"{NAMESPACE}/{LEAF}"
 
 POSSIBLE_LOG_LEVELS = ("info", "debug", "error", "warning", "disable")
 
+class VersionType(Enum):
+    Legacy = "legacy"
+    Semver = "semantic version"
 
 class BioTeaBoxVersion:
     def __init__(self, raw_version) -> None:
         assert isinstance(raw_version, str)
         self.raw_version = raw_version
-
-    @property
-    def realversion(self):
         try:
-            return parse(self.raw_version)
+            self.realversion = parse(self.raw_version)
+            self.version_type = VersionType.Legacy
         except InvalidVersion:
             # This version cannot be parsed. So, we cheat and make it parseable
             # The most common case is the 'bleeding' version.
             # This generally works as non-canonical versions usually are only
             # interested in the equality of the versions.
             log.debug(f"Not parsing '{self.raw_version}' as it is a legacy version")
-            return self.raw_version
+            self.realversion = self.raw_version
+            self.version_type: VersionType =  VersionType.Semver
 
     def __lt__(self, other: BioTeaBoxVersion) -> bool:
         if type(other) is str:
@@ -56,9 +59,11 @@ class BioTeaBoxVersion:
         if type(other) is not BioTeaBoxVersion:
             raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
 
-        if type(self.realversion) is str:
-            log.debug("Indeterminate verison comparison. Returning None")
-            return None
+        if self.version_type is VersionType.Legacy or other.version_type is VersionType.Legacy:
+            # We can only compare the strings here. This is probably wrong, but
+            # it's the best we can do.
+            return self.raw_version < self.version_type
+
         return self.realversion < other.realversion
 
     def __eq__(self, other: object) -> bool:
@@ -67,6 +72,10 @@ class BioTeaBoxVersion:
 
         if type(other) is not BioTeaBoxVersion:
             raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
+
+        if self.version_type is VersionType.Legacy or other.version_type is VersionType.Legacy:
+            return self.raw_version == self.version_type
+
         return self.realversion == other.realversion
 
     def __str__(self) -> str:
@@ -77,10 +86,21 @@ def get_installed_versions(
     client: docker.DockerClient = docker.from_env(),
 ) -> list[BioTeaBoxVersion]:
     local_images = client.images.list(REPO)
-    local_images = [
-        local_image.tags[0][(len(REPO) + 1) :] for local_image in local_images
-    ]
-    return [BioTeaBoxVersion(version) for version in local_images]
+    local_tags = []
+    for image in local_images:
+        for tag in image.tags:
+            # A single SHA image may have multiple tags
+            try:
+                # If the tag does not start with the correct REPO bit, we would
+                # crash here. This happens mostly for images in the repo but with
+                # no tag, which is very weird, but anyway
+                local_tags.append(tag[(len(REPO) + 1) :])
+            except IndexError:
+                log.exception("blo")
+                log.debug(f"Ignoring tag '{tag}' due to parsing errors.")
+                continue
+    log.debug(f"Detected installed tags: {local_tags}")
+    return [BioTeaBoxVersion(version) for version in local_tags]
 
 
 def pull_biotea_box_version(
@@ -391,6 +411,7 @@ class AnalyzeInterface(BioTeaBoxInterface):
                 "magenta3",
             ],
         ),
+        "rownames_col": BioTeaBoxArgument(is_(str), "probe_id"),
         # Plot options
         "use_pdf": BioTeaBoxArgument(is_(bool), True),
         "plot_width": BioTeaBoxArgument(is_(int), 16),
@@ -407,6 +428,7 @@ class AnnotateInterface(BioTeaBoxInterface):
         ),
         "output_path": RequiredBioTeaBoxArgument(is_path_exists_or_creatable_portable),
         "database_name": BioTeaBoxArgument(_or_(is_(str), is_(bool)), "internal"),
+        "rownames_col": BioTeaBoxArgument(is_(str), "probe_id"),
     }
 
 

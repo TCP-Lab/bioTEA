@@ -82,6 +82,9 @@ design:
   #   some_variable: "(high, low):2"
   #   another_var: "[fat, thin]:2"
 
+  # Specify the column holding the row IDs of the data
+  rownames_col: "probe_id"
+
   # Specify the colours that represent the unique groups in the experimental
   # design. Must cover all groups or more.
   group_colors: [

@@ -87,6 +87,8 @@ design:
     "cornflowerblue", "firebrick3", "olivedrab3", "darkgoldenrod1", "purple",
     "magenta3"
     ] # list of str
+  
+  rownames_col: "probe_id"
 
   # Filters:
   filters:

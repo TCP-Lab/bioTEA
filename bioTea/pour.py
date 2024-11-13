@@ -118,9 +118,9 @@ def retrieve_geo_data(
 def info_containers():
     """Get information on the downloaded and available BioTeaBox containers."""
     log.info("Getting container info...")
-    local_versions = get_installed_versions()
-    remote_versions = [str(x) for x in get_remote_versions()]
-    all_versions = get_all_versions()
+    local_versions = set([str(x) for x in get_installed_versions()])
+    remote_versions = set([str(x) for x in get_remote_versions()])
+    all_versions = set([str(x) for x in get_all_versions()])
 
     c = lambda x: Fore.LIGHTGREEN_EX + str(x) + Fore.RESET
     col_all_vers = [

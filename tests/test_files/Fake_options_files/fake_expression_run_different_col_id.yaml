@@ -88,7 +88,7 @@ design:
     "magenta3"
     ] # list of str
   
-  rownames_col: "probe_id"
+  rownames_col: "genes"
 
   # Filters:
   filters:

@@ -54,6 +54,28 @@ def test_generic_run(tmpdir, datafiles):
     # Test the presence of the logs
     assert contains_logs(tmpdir)
 
+@pytest.mark.datafiles(
+    os.path.join(FIXTURE_DIR, "Fake_options_files/fake_expression_run_different_col_id.yaml"),
+    os.path.join(FIXTURE_DIR, "fake_expression_matrix_different_col_id.csv"),
+)
+def test_different_col_id(tmpdir, datafiles):
+    res = subprocess.run(
+        [
+            "biotea",
+            "analyze",
+            "--log-name",
+            "biotea_log",
+            "--version",
+            "bleeding",
+            os.path.join(datafiles, "fake_expression_run_different_col_id.yaml"),
+            tmpdir,
+            os.path.join(datafiles, "fake_expression_matrix_different_col_id.csv"),
+        ],
+        capture_output=True,
+    )
+    assert res.returncode == 0, f"Command failed: {res.stderr}"
+    # Test the presence of the logs
+    assert contains_logs(tmpdir)
 
 @pytest.mark.datafiles(
     os.path.join(FIXTURE_DIR, "Fake_options_files/fake_expression_run_wet.yaml"),
