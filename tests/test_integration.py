@@ -140,6 +140,38 @@ def test_generic_run_with_annotations(tmpdir, datafiles):
 
 
 @pytest.mark.datafiles(
+    os.path.join(
+        FIXTURE_DIR, "Fake_options_files/fake_expression_run_with_annots_different_col_id.yaml"
+    ),
+    os.path.join(FIXTURE_DIR, "fake_expression_matrix_annotatable_different_col_id.csv"),
+)
+def test_generic_run_with_annotations_different_row_id(tmpdir, datafiles):
+    res = subprocess.run(
+        [
+            "biotea",
+            "analyze",
+            "--version",
+            "bleeding",
+            "--log-name",
+            "biotea_log",
+            os.path.join(datafiles, "fake_expression_run_with_annots_different_col_id.yaml"),
+            tmpdir,
+            os.path.join(datafiles, "fake_expression_matrix_annotatable_different_col_id.csv"),
+        ],
+        capture_output=True,
+    )
+    assert res.returncode == 0, f"Command failed: {res.stderr}"
+    # Test the output files actually have the annotation columns
+    assert contains_logs(tmpdir)
+    assert contains_output(tmpdir)
+    assert (Path(tmpdir) / "analyze Figures").exists()
+    with (Path(tmpdir) / "Limma - DEG Table treated-control.csv").open("r") as testfile:
+        header = testfile.readline()
+    # The double quotes is due to csv encoding.
+    assert '"SYMBOL"' in header.split(",")
+
+
+@pytest.mark.datafiles(
     os.path.join(FIXTURE_DIR, "Fake_options_files/fake_counts_run.yaml"),
     os.path.join(FIXTURE_DIR, "fake_count_matrix.csv"),
 )

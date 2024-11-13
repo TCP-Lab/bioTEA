@@ -42,15 +42,14 @@ class BioTeaBoxVersion:
         self.raw_version = raw_version
         try:
             self.realversion = parse(self.raw_version)
-            self.version_type = VersionType.Legacy
+            self.version_type = VersionType.Semver
         except InvalidVersion:
             # This version cannot be parsed. So, we cheat and make it parseable
             # The most common case is the 'bleeding' version.
             # This generally works as non-canonical versions usually are only
             # interested in the equality of the versions.
-            log.debug(f"Not parsing '{self.raw_version}' as it is a legacy version")
             self.realversion = self.raw_version
-            self.version_type: VersionType =  VersionType.Semver
+            self.version_type: VersionType =  VersionType.Legacy
 
     def __lt__(self, other: BioTeaBoxVersion) -> bool:
         if type(other) is str:
@@ -58,11 +57,15 @@ class BioTeaBoxVersion:
 
         if type(other) is not BioTeaBoxVersion:
             raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
-
-        if self.version_type is VersionType.Legacy or other.version_type is VersionType.Legacy:
+        
+        # A legacy version is always lower than a normal one, for reasons.
+        if self.version_type != other.version_type:
+            return self.version_type is VersionType.Legacy
+        
+        if self.version_type is VersionType.Legacy and other.version_type is VersionType.Legacy:
             # We can only compare the strings here. This is probably wrong, but
             # it's the best we can do.
-            return self.raw_version < self.version_type
+            return self.raw_version < self.raw_version
 
         return self.realversion < other.realversion
 
@@ -74,7 +77,7 @@ class BioTeaBoxVersion:
             raise TypeError(f"Cannot compare 'BioTeaBoxVersion' and '{type(other)}'")
 
         if self.version_type is VersionType.Legacy or other.version_type is VersionType.Legacy:
-            return self.raw_version == self.version_type
+            return self.raw_version == self.raw_version
 
         return self.realversion == other.realversion
 
@@ -161,9 +164,12 @@ def get_all_versions() -> list[BioTeaBoxVersion]:
     return installed
 
 def get_latest_version() -> BioTeaBoxVersion:
-    all_vers = get_all_versions()
+    all_vers = [x for x in get_all_versions() if x.version_type is VersionType.Semver]
+    all_vers = [x for x in all_vers if is_version_compatible(x)]
     if all_vers:
-        return sorted(all_vers)[-1]
+        sorted_vers = sorted(all_vers)
+        log.debug(f"Sorted version array: {[str(x) for x in sorted_vers]}")
+        return sorted_vers[-1]
     raise ImageNotFoundError("No valid 'latest' version found.")
 
 
@@ -180,7 +186,7 @@ def is_version_compatible(version: BioTeaBoxVersion) -> bool:
         bool: Whether the version is compatible or not.
     """
 
-    if version == "bleeding":
+    if version.version_type is VersionType.Legacy and str(version) == "bleeding":
         return True
 
     biotea_parsed = parse(__version__)

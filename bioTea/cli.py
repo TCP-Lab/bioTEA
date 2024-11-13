@@ -261,10 +261,7 @@ def annotate_file_command(
         ..., help="Path to the input expression matrix to annotate"
     ),
     output: Path = typer.Argument(..., help="Path to the annotated output path"),
-    annotation_database: str = typer.Argument(
-        "internal",
-        help="Annotation database to use. Pass 'internal' to use the default human database. Otherwise, a path to the database file generated with `annotations generate`",
-    ),
+    rownames_col: str = typer.Option("probe_id", help="Specify the column holding the probe IDs to annotate"),
     version: str = typer.Option("latest", help="Specify BioTEA box container version"),
     log_name: Optional[str] = typer.Option(
         None, help="Specify BioTEA box log name for the run"
@@ -275,10 +272,11 @@ def annotate_file_command(
     pour.annotate_file(
         target=target,
         output=output,
-        annotation_database=annotation_database,
+        annotation_database="internal",
         version=version,
         log_name=log_name,
         verbose=verbose,
+        rownames_col=rownames_col,
     )
 
 

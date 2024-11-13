@@ -22,6 +22,7 @@ from bioTea.docker_wrapper import (
     get_latest_version,
     pull_biotea_box_version,
     run_biotea_box,
+    is_version_compatible
 )
 from bioTea.utils.errors import ImageNotFoundError, SanityError
 from bioTea.utils.strings import TEA_LOGO
@@ -121,20 +122,31 @@ def info_containers():
     local_versions = set([str(x) for x in get_installed_versions()])
     remote_versions = set([str(x) for x in get_remote_versions()])
     all_versions = set([str(x) for x in get_all_versions()])
+    latest_version = str(get_latest_version())
+    incompatible_versions = set([str(x) for x in get_all_versions() if not is_version_compatible(x)])
 
     c = lambda x: Fore.LIGHTGREEN_EX + str(x) + Fore.RESET
+    r = lambda x: Fore.LIGHTRED_EX + str(x) + Fore.RESET
+    # Give priority to the red
     col_all_vers = [
-        c(ver) if ver in local_versions else str(ver) for ver in all_versions
+        r(ver) if ver in incompatible_versions else str(ver) for ver in all_versions
+    ]
+    col_all_vers = [
+        c(ver) if ver in local_versions else str(ver) for ver in col_all_vers
     ]
 
     local_versions = [str(x) for x in local_versions]
     typer.echo(Fore.LIGHTBLUE_EX + "--- Container Info ---" + Fore.RESET)
+    typer.echo("Latest version: {}".format(latest_version))
     typer.echo("All versions: {}".format(", ".join(sorted(col_all_vers))))
     typer.echo(
         Fore.LIGHTGREEN_EX
         + "Note: "
         + Fore.RESET
-        + "Containers installed locally are highlighted in green."
+        + "Containers installed locally are highlighted in green, and incompatible ones are highlighted in red."
+        + Fore.LIGHTBLACK_EX 
+        + "\nThe 'bleeding' version is always supported for debug reasons"
+        + Fore.RESET
     )
     typer.echo(Fore.LIGHTBLUE_EX + "----------------------" + Fore.RESET)
 
@@ -392,6 +404,7 @@ def annotate_file(
     version: str = "latest",
     log_name: Optional[str] = None,
     verbose: bool = False,
+    rownames_col: str = "probe_id",
 ):
     """Annotate some expression data or DEA output with annotation data."""
     output = make_path_valid(output)
@@ -399,7 +412,7 @@ def annotate_file(
     if annotation_database != "internal":
         # TODO: Remove this once `annotations generate` gets implemented.
         log.warn(
-            "Setting the annotation database to anything other than `internal` is currently not supported. Setting it to `internal` again. See issue *** on GitHub."
+            "Setting the annotation database to anything other than `internal` is currently not supported. Setting it to `internal` again. Sorry!."
         )
         annotation_database = "internal"
 
@@ -412,6 +425,7 @@ def annotate_file(
             "expression_data_path": target.name,
             "output_path": output.name,
             "database_name": annotation_database,
+            "rownames_col": rownames_col,
         },
         interface=AnnotateInterface,
         input_anchor=target.parent,
