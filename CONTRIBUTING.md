@@ -42,3 +42,29 @@ For questions or concerns, contact @mrhedmad.
 "The box" refers to the Biotea docker container.
 Its code lives in its own repository: [https://github.com/CMA-Lab/bioTEA-box].
 Please look at that repository for more information.
+
+# Cutting a release
+Recently, using actions to publish on PyPI got much harder, so I jot down here how to do it manually:
+- Bump the version in `setup.cfg` as needed.
+- Enter a virtual environment and install `requirements-dev.txt`:
+  `pip install -r requirements-dev.txt`
+- Ensure that the package can be installed on the latest commit:
+  `pip install -e .`
+- Go to the biotea-box repo and build the latest container:
+  `docker build cmalabscience/biotea-box:bleeding`
+- Test the installation:
+  `python -m pytest .`
+
+Now, everything should have worked fine. We can cut the release.
+
+- Clean old releases:
+  `rm dist/*`
+- Build the package locally:
+  `python -m build`
+- Push to PyPI:
+  `python -m twine upload dist/*`
+- If needed, regenerate and push an update to the box (in the box's repo):
+  `docker build cmalabscience/biotea-box:<updated tag>` followed by `docker push cmalabscience/biotea-box:<updated tag>`
+- Cut a release on Github corresponding to this latest commit.
+
+And you're done!
