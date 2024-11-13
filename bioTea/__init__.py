@@ -4,6 +4,7 @@ A pipeline for processing transcription data to get differential gene expression
 """
 import collections
 import importlib.resources as pkg_resources
+from importlib.metadata import version
 import logging
 import os
 from copy import copy
@@ -20,7 +21,7 @@ from bioTea.utils.errors import UnsupportedOptionError
 
 init(autoreset=True)
 
-__version__ = "1.1.0"
+__version__ = version(__package__)
 # Set what is exported by the __init__
 __all__ = ["__version__", "OPTIONS"]
 
